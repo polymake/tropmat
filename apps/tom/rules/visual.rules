@@ -16,7 +16,7 @@ object TropicalOrientedMatroid {
 user_method VISUAL_ALL : VERTICES, DIM, N_PHP{
 	my ($self)=@_;
 	
-	compose($self->VISUAL_MIXED_SUBDIVISION(EdgeColor=>'grey', FacetStyle=>'hidden'), $self->VISUAL_PHPS('All'));
+	compose($self->VISUAL_MIXED_SUBDIVISION(EdgeColor=>'grey', FacetStyle=>'hidden'), $self->VISUAL_DUAL_PHPS('All'));
 }
 precondition : DIM {$this->DIM<=3, $this->DIM>=2}
 
