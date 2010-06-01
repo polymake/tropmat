@@ -1,0 +1,2 @@
+
+declare property_type TomType : c++ (include => ["TomType.h"]);

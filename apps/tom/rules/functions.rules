@@ -1,0 +1,177 @@
+# @category Producing a polytope
+# Returns the face of a standard //d//-simplex spanned by the vertices in //vertices//.
+# @param Int d the dimension of the simplex
+# @param Set<Int> vertices the labels of the vertices (starting from 0)
+# @return Polytope
+user_function simplex_face {
+	my ($d, @l) = @_;
+	my $l = @l;
+	my @vs = ();
+	
+	for (my $i=0; $i<$l; ++$i) {
+		# create a vector with one at positions 0 and i+1 and 0 elsewhere
+		# to be replaced with unit_vector
+
+		my @v = ();
+		push(@v,1);
+		
+		for (my $j=0; $j<$d; ++$j) {
+			if ($l[$i]==$j+1) {
+				push(@v,1);
+			} else {
+				push(@v,0);
+			}
+		}
+		push(@vs,\@v);
+	}
+	
+	
+	my $s = new polytope::Polytope<Float>(VERTICES=> \@vs);
+	return $s;	
+}
+
+
+# @category Producing a polytope
+# Computes the Minkowski sum of the given simplex faces.
+# Each face is given as a list of its vertices, where the vertices are labeled
+# starting from 0.
+# @param Array<Set<Int>> faces
+# @param Int d the dimension of the big simplex
+# @return Polytope
+user_function minkowski_cell {
+	
+	my ($ll, $d) = @_;
+	my @l = @{$ll};
+	my $l = @l;
+	my $zero=new Vector<Float>($d);
+	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
+	
+	my $m = $origin;
+	for (my $i=0; $i<$l; ++$i) {
+
+		my $temp = &simplex_face($d, @{$l[$i]});
+		$m = polytope::minkowski_sum(1,$m,1,$temp);
+	}	
+	return $m;	
+} 
+
+
+
+
+# @category Producing a TropicalOrientedMatroid
+# @param TropicalOrientedMatroid T
+# @param Int h1 index of the first hyperplane involved
+# @param Int h2 index of the second hyperplane involved
+# @param Array<Int> type entries at the second position
+# @return TropicalOrientedMatroid
+user_function tom_flip {
+ my ($t,$i,$j,$s)=@_;
+ my @v=@{$t->VERTICES};
+  
+ my @newv=();
+ 
+ foreach (@v) {
+ 	my $curr=apply_flip($_, $s,$i,$j);
+	push(@newv, $curr); 
+ }
+
+	my @r=@newv;
+ 
+#	print "r:\n";
+#	foreach (@r) {
+#		foreach (@$_) {
+#			print "{@$_} ";
+#		}
+#		print "\n";
+#	}
+
+ 
+ my $tom = new TropicalOrientedMatroid(VERTICES=>\@newv);
+ return $tom;
+}
+
+sub apply_flip {
+	my ($t,$s,$i,$j)=@_;
+
+	if (contains($t->[$i-1],$s)){
+		if (cont_elt($t->[$j-1],$s->[0])) {
+#			print "1\n";
+			return change_flip_entries($t,$i,$j,$s->[0],$s->[1]);
+		}
+		elsif (cont_elt($t->[$j-1],$s->[1])) {
+#			print "2\n";
+			return change_flip_entries($t,$i,$j,$s->[1],$s->[0]);
+		}
+		else {
+#			print "51\n";
+			return $t;
+		}
+	}
+	elsif (contains($t->[$j-1],$s)){
+		if (cont_elt($t->[$i-1],$s->[0])) {
+#			print "3\n";
+			return change_flip_entries($t,$j,$i,$s->[0],$s->[1]);
+		}
+		elsif (cont_elt($t->[$i-1],$s->[1])) {
+#			print "4\n";
+			return change_flip_entries($t,$j,$i,$s->[1],$s->[0]);
+		}	
+		else {
+#			print "52\n";
+			return $t;
+		}
+	}
+	else {
+#		print "5\n";
+		return $t;
+	}
+}
+
+# return true if elt is contained in set
+sub cont_elt {
+	my ($set, $elt)=@_;
+
+	foreach (@{$set}){
+		if ($_ == $elt){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+sub contains {
+	my ($set, $ss)=@_;
+	foreach (@$ss) {
+		unless (cont_elt($set,$_)) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+sub change_flip_entries {
+	my ($t,$i,$j,$s1,$s2)=@_;
+	# entry i contains {s1,s2}
+	# entry j contains s1
+	
+	print "$t\n";
+	
+	my @nextv=@{$t};
+
+
+	my @newi=();
+	foreach (@{$t->[$i-1]}) {
+		unless ($_ == $s2){
+			push(@newi,$_);
+		}
+	}
+	my @ni=sort(@newi);
+	$nextv[$i-1]=\@ni;
+	
+	my @newj=@{$t->[$j-1]};
+	push(@newj,$s2);
+	my @nj=sort(@newj);
+	$nextv[$j-1]=\@nj;
+
+	return \@nextv;
+}

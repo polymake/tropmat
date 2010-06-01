@@ -1,0 +1,175 @@
+
+# @topic application
+# This application deals with __T__ropical __o__riented __m__atroids.
+# 
+# Contained in extension ''tropmat''.
+
+IMPORT common graph polytope
+
+file_suffix tom
+
+# A tropical oriented matroid.
+declare object TropicalOrientedMatroid;
+
+
+# these rules are intrinsic: they don't depend on any external software to be installed separately
+INCLUDE
+  #type.rules
+  functions.rules
+  tom_properties.rules
+  tom_methods.rules
+  visual.rules
+  examples.rules
+  
+object TropicalOrientedMatroid {
+
+
+rule N_PHP : TOPES {
+   $this->N_PHP=@{${$this->TOPES}[0]};
+}
+weight 0.10;
+
+rule N_PHP : VERTICES {
+   $this->N_PHP=@{${$this->VERTICES}[0]};
+}
+weight 0.10;
+
+
+rule N_TOPES : TOPES {
+	$this->N_TOPES=@{($this->TOPES)};
+}
+weight 0.10;
+
+rule N_TYPES : TYPES {
+	$this->N_TYPES=@{($this->TYPES)};
+}
+weight 0.10;
+
+
+rule N_VERTICES : VERTICES {
+	$this->N_VERTICES=@{($this->VERTICES)};
+}
+weight 0.10;
+
+
+rule DIM : VERTICES | TOPES | TYPES {
+	$this->DIM=dim($this->VERTICES | TOPES | TYPES)-1;	
+}
+weight 0.20;
+
+rule RANK : VERTICES | TOPES | TYPES {
+	$this->RANK=dim($this->VERTICES | TOPES | TYPES);	
+}
+weight 0.20;
+
+rule DIM : RANK {
+	$this->DIM = $this->RANK-1;
+}
+rule RANK : DIM {
+	$this->RANK = $this->DIM+1;
+}
+
+rule TOPES : VERTICES {
+	$this->TOPES=topes_from_vertices($this->VERTICES);
+}
+weight 2.00;
+
+rule GENERAL_POSITION : N_TOPES, DIM, N_PHP {
+	my $x = binomial($this->N_PHP+$this->DIM, $this->DIM);
+	$this->GENERAL_POSITION = ($this->N_TOPES==$x);
+}
+weight 0.20;
+
+rule BOUNDARY_AXIOM : VERTICES | TOPES, N_PHP, RANK {
+	$this->BOUNDARY_AXIOM = boundary_axiom($this->VERTICES | TOPES, $this->N_PHP, $this->RANK);
+}
+weight 0.30;
+
+rule SURROUNDING_AXIOM : VERTICES {
+	$this->SURROUNDING_AXIOM = 1;
+}
+weight 0.10;
+
+rule COMPARABILITY_AXIOM : TYPES, RANK {
+	my @v = @{$this->TYPES};
+	for (my $i=0; $i<@v-1; ++$i) {
+		for (my $j=$i+1; $j<@v; ++$j) {
+			unless ($this->COMPARABLE($v[$i],$v[$j])) {
+				print "$v[$i]\n $v[$j]\n";
+				$this->COMPARABILITY_AXIOM= 0;
+			}
+		}
+	}
+	$this->COMPARABILITY_AXIOM= 1;
+}
+weight 2.00;
+
+rule ELIMINATION_AXIOM : TYPES, N_PHP {
+	my @v = @{$this->TYPES};
+	
+	for (my $i=0; $i<@v-1; ++$i) {
+#		print "i: $i\n";
+		for (my $j=$i+1; $j<@v; ++$j) {
+#			print "j: $j\n";
+			for (my $k=1; $k <= $this->N_PHP; ++$k) {
+#				print "k: $k\n";
+				my $e=$this->ELIMINATION($v[$i],$v[$j],$k);
+				unless ($e==0) {
+					#print "$v[$i]\n $v[$j]\n $k\n";
+					$this->ELIMINATION_AXIOM= 0;
+				}
+			}
+		}
+	}
+	$this->ELIMINATION_AXIOM= 1;
+}
+weight 5.00;
+
+
+rule IS_TOM : BOUNDARY_AXIOM, SURROUNDING_AXIOM, COMPARABILITY_AXIOM, ELIMINATION_AXIOM {
+	$this->IS_TOM = ($this->BOUNDARY_AXIOM and $this->SURROUNDING_AXIOM and $this->COMPARABILITY_AXIOM and $this->ELIMINATION_AXIOM);
+}
+weight 0.10;
+
+rule TYPES : VERTICES {
+	$this->TYPES=types_from_vertices($this->VERTICES);
+}
+precondition : GENERAL_POSITION;
+weight 3.00;
+
+rule VERTICES : TYPES {
+	my @t={$this->TYPES};
+	my @r=();
+	
+	foreach (@t) {
+		if ($this->TYPE_RANK($_)==1) {
+			push(@r,$_);
+		}
+	}
+	$this->VERTICES= \@r;
+}
+
+#rule TYPES : VERTICES {
+#	@v=@{$this->VERTICES};
+
+#	$this->TYPES=@v;
+#}
+#weight 5.0;
+
+
+
+#rule DUAL : VERTICES, DIM, N_PHP {
+# 
+#	@v = @{$this->VERTICES};
+#	
+#}
+
+
+
+}
+
+
+# Local Variables:
+# mode: perl
+# c-basic-offset:3
+# End:

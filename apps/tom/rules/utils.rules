@@ -1,0 +1,18 @@
+object TropicalOrientedMatroid {
+
+method binom {
+	my $self = shift;
+	my ($n,$k)=@_;
+	
+	if ($n/2 < $k) {
+		$k = $n-$k;
+	}
+	my $s=1;
+	for (my $i=0; $i<$k; ++$i) {
+		$s *= ($n-$i);
+		$s /= ($i+1);
+	}
+	return $s;
+}
+
+}
