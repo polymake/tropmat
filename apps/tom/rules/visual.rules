@@ -26,17 +26,66 @@ precondition : DIM {$this->DIM<=3, $this->DIM>=2}
 # Visualizes the //i//-th dual pseudohyperplane.
 # @param Int i
 # @return Visual::TropicalOrientedMatroid
-user_method VISUAL_DUAL_PHP : VERTICES, DIM, GENERAL_POSITION {
-	my ($self, $php)=@_;
+user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, GENERAL_POSITION {
+	my ($self, $php, $decor)=@_;
+
+	my $d=$self->DIM;
+	my $vertices=$self->PSEUDOHYPERPLANE($php);
+	
+	if ($d >= 4) {
+		die "don't know how to visulize $d-dimensional polytopal complex";
+	}
+
+	my @cells_visual=();
+
 	
 	if ($self->GENERAL_POSITION) {
-		visual_dual_php_gen_pos($self,$php);
+#		print "gen_pos\n";
+		
+		if ($d == 2) {
+			foreach (@{$vertices}) {
+				foreach (dual_of_fine_cell($_,$php,$d)) {
+					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', $decor )));
+				}
+			}
+		}
+		
+		if ($d == 3) {
+			foreach (@{$vertices}) {
+				foreach (dual_of_fine_cell($_,$php,$d)) {
+					my $temp=ortho_project($_);
+					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', $decor )));
+				}
+			}
+		}
+		
 	} else {
-		visual_dual_php_non_gen_pos($self,$php);
+#		print "non_gen\n";
+		
+		if ($d == 2) {
+			foreach (@{$vertices}) {
+				foreach (dual_of_cell($self, $_,$php)) {
+					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', $decor )));
+				}
+			}
+		}
+		
+		if ($d == 3) {
+			foreach (@{$vertices}) {
+				foreach (dual_of_cell($self, $_,$php)) {
+					my $temp=ortho_project($_);
+					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', $decor )));
+				}
+			}
+		}
 	}
+	
+   visualize(new Visual::TropicalOrientedMatroid( Name => "Dual",
+				TropicalOrientedMatroid => $self,
+				@cells_visual));
+
 }
 precondition : DIM { $this->DIM<=3, $this->DIM>=2 }
-weight 3.0;
 
 
 # @category Visualization
@@ -74,23 +123,11 @@ user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 		my $hue=$angle*$count;
 
 		if ($d == 2) {
-			foreach (@{$vertices}) {
-				foreach (dual_of_cell($_,$php,$d)) {
-					#my $rgb=new get_color($count, $h);
-					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', EdgeColor=>get_color($count, $h))));
-					#push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden' )));
-				}
-			}
+			push(@cells_visual, my $v_php=$self->VISUAL_DUAL_PHP($php, VertexStyle=>'hidden', EdgeColor=>get_color($count, $h)));
 		}
 		
 		if ($d == 3) {
-			foreach (@{$vertices}) {
-				foreach (dual_of_cell($_,$php,$d)) {
-					my $temp=ortho_project($_);
-					#push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', FacetColor=>new HSV($hue,1,1) )));
-					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', FacetColor=>get_color($count, $h))));
-				}
-			}
+			push(@cells_visual, my $v_php=$self->VISUAL_DUAL_PHP($php, VertexStyle=>'hidden', FacetColor=>get_color($count, $h)));
 		}
 		++$count;
 	}
@@ -107,7 +144,7 @@ precondition : DIM {$this->DIM<=3, $this->DIM>=2}
 # corresponding to the tropical oriented matroid.
 # @return Visual::TropicalOrientedMatroid
 user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES, DIM {
-	my ($self,$decor)=@_;
+	my ($self, $decor)=@_;
 	my $d=$self->DIM;
 	my $vertices = $self->VERTICES;
 

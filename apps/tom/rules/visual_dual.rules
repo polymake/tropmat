@@ -2,91 +2,16 @@
 object TropicalOrientedMatroid {
 
 
-###########################
-# helper functions
-###########################
-
-# projects a 3-dim standard simplex in R4 to R3.
-sub ortho_project {
-	my ($poly) = @_;
-	my @vs = @{$poly->VERTICES};
-	my @nvs = ();
-	foreach (@vs) {
-		my @v=@{$_};
-		#print "@v";
-		
-		my @nv = ();
-		$nv[0]=1;
-		for (my $i=1; $i<4; ++$i) {
-			$nv[$i] = $v[$i] - 1/3*$v[4];
-		}
-		#print "		@nv\n";
-		push(@nvs,\@nv);
-	}
-	
-	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
-	return $r;
-}
-
-# shifts pseudohyperplanes so that one can see them
-sub shift_php {
-	my ($poly, $number)=@_;
-	my @vs = @{$poly->VERTICES};
-	my @nvs = ();	# new vertices
-	foreach (@vs) {
-		my @v=@{$_};
-		
-		my @nv = ();	# new vertex
-		$nv[0]=1;
-		for (my $i=1; $i<4; ++$i) {
-			$nv[$i] = $v[$i]+$number*.1;
-		}
-		push(@nvs,\@nv);
-	}
-	
-	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
-#	my $r = new polytope::Polytope<Float>(VERTICES=>\@vs);
-
-	return $r;
-	
-
-}
-
-
-sub get_color_hsv {
-	my ($ind, $total) = @_;
-	my $r=new HSV(360/$total*$ind,1,1);
-	return $r;
-}
-sub get_color {	# tud
-	my ($ind, $total) = @_;
-	my $i;
-	if ($total>=12) {
-		$i=($ind+1)% 12;
-	}
-	else {
-		$i=int(12/$total)*$ind+1;
-	}
-	return 'tud'.$i.'b';
-}
-
-
-
-# set difference
-sub setminus {
-	my ($set, $ss)=@_;
-	my @ret=();
-	foreach (@$set) {
-		unless (cont_elt($ss,$_)) {	push(@ret, $_);	}
-	}
-	return \@ret;
-}
 
 ###########################
 # dual helper functions
 ###########################
 
-sub visual_dual_php_gen_pos {
+
+
+# visualise dual phps in general, i.e., even in non-general position
+sub visual_dual_php_non_gen_pos {
+	print "non_gen\n";
 	my ($self, $php)=@_;
 	
 	my $d=$self->DIM;
@@ -100,7 +25,7 @@ sub visual_dual_php_gen_pos {
 
     if ($d == 2) {
     	foreach (@{$vertices}) {
-    		foreach (dual_of_cell($_,$php,$d)) {
+    		foreach (dual_of_cell($self, $_,$php)) {
     			push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden' )));
     		}
     	}
@@ -108,7 +33,7 @@ sub visual_dual_php_gen_pos {
     
     if ($d == 3) {
     	foreach (@{$vertices}) {
-    		foreach (dual_of_cell($_,$php,$d)) {
+    		foreach (dual_of_cell($self, $_,$php)) {
     			my $temp=ortho_project($_);
     			push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden' )));
     		}
@@ -118,11 +43,53 @@ sub visual_dual_php_gen_pos {
    visualize(new Visual::TropicalOrientedMatroid( Name => "Dual",
 					TropicalOrientedMatroid => $self,
 					@cells_visual));
+	
+
+}
+
+
+sub dual_of_cell {
+#	print "dual_of_cell\n\n";
+	my ($tom, $v, $php) = @_;
+#	print "vertex: "; foreach(@$v){print "{@$_} "}; print "\n";
+	# v is the current vertex, php the index of the php under consideration
+	my $d=$tom->RANK;
+	my $entry = new Array<Int>($v->[$php-1]);
+	# entry is the entry of the current hyperplane
+
+	my @dual_cells=();	# will contain dual cells
+
+	my $s=$tom->all_subtypes($v);
+
+
+	# now go thru all "edges", i.e., subsets of entry of cardinality 2
+	for (my $i=0; $i<@$entry-1; ++$i) {
+		for (my $j=$i+1; $j<@$entry; ++$j) {
+
+			my @vertices=();	# will contain vertices of the dual cell corresponding to the edge defined by i and j
+			
+			my $edge=new Set<Int>($entry->[$i],$entry->[$j]);
+#			print "edge: $edge\n";
+			foreach my $c (@$s) {
+				#print "edge: $edge  entry: $c->[$php-1]\n";
+				if (incl($edge, $c->[$php-1])<=0) {	# if i,j are contained in current entry ...
+#				print "type: "; foreach(@$c){print "{@$_} "}; print "\n";
+					my $cell=minkowski_cell($c, $d);
+					push(@vertices, $cell->VERTEX_BARYCENTER);
+				}
+			}
+#			print "vertices:\n"; foreach (@vertices){print "$_\n";} print "\n";
+			my $m=new Polytope<Rational>(POINTS=>\@vertices);
+
+			push(@dual_cells, $m);							
+		}
+	}
+	return @dual_cells;
 }
 
 
 # returns the list of cells constituting the dual of a php in a given full-dimensional cell of a mixsd
-sub dual_of_cell {
+sub dual_of_fine_cell {
 #	print "dual_of_cell\n";
 	my ($v, $php, $d) = @_;
 	# v is the current vertex, php the index of the php under consideration and d the dimension

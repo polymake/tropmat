@@ -51,50 +51,46 @@ UserFunction4perl("# @category Utilities"
 
 
 
+// Array<Array<Set<int> > > enumerate_ordered_partitions(const Set<int> & s) {
+// 	list<list<Set<int> > > r;
+// 	
+// 	r=rec_ordps(s);
+// 	
+// 	Array<Array<Set<int > > > ret(r.begin(), r.end());
+// }
+// 
+// list<list<Set<int> > > rec_ordps(const Set<int> & s) {
+// 	list<list<Set<int> > > r;
+// 	
+// 	Array<Set<int> > all_ss=enumerate_subsets(s);
+// 
+// 	for (Array<Set<int> >::const_iterator it=all_ss.begin(); it!=all_ss.end(); ++it) {
+// 	
+// 		Set<int> new_s=s-*it;
+// 		if (new_s.size()==0) {
+// 			;
+// 		} else {
+// 		
+// 		}
+// 	}
+// 
+// }
+
+
+std::list<Array<Set<int> > > all_subtypes(const Array<Set<int> >);
+
+
 Array<Array<Set<int> > > types_from_vertices(const Array<Array<Set<int> > > vertices) {
 
 	const int r(vertices.size());
 
 	Set<Array<Set<int> > > types;	// will contain the types
-	std::list<Array<Set<int> > > mylist;
 	
 	Array<Set<int> > curr;	// current vertex
 	for (int i=0; i<r; ++i) {	// go thru all vertices
 		curr = vertices[i];
-		std::list<Array<Set<int> > > mylist;	// will contain types
-		mylist.push_back(curr);
-		//cout<<"curr "<<curr<<endl;
-		std::list<Array<Set<int> > >::iterator curr_v = mylist.begin();
+		std::list<Array<Set<int> > > mylist=all_subtypes(curr);	// contains all types containing current vertex
 
-		while (curr_v!=mylist.end()) {	// perform BFS on mylist
-								
-			for (int j = 0; j < curr_v->size(); ++j) {	// go thru entries of current vertex
-				Set<int> & set = (*curr_v)[j];	// current entry of curr_v
-				
-				if (set.size() > 1) {
-					
-					Array<Set<int> > subsets = enumerate_subsets(set);
-					int setsize=set.size();
-					
-					for (Array<Set<int> >::iterator sit = subsets.begin(); sit != subsets.end(); ++sit) {
-					// for each subset of s ...
-						if (setsize > sit->size()){
-							Array<Set<int> > next = *curr_v;
-							next[j] = *sit;	// create a type with current 	position j replaced by that subset
-							mylist.push_back(next);
-							//cout<<"next "<<next<<endl;
-						}
-					}
-					
-					++curr_v;	// proceed
-					break;
-				}
-				else if (j==curr_v->size()-1) {
-					++curr_v;
-					break;
-				}
-			}
-		}
 		
 		// now add everything to types
 		for (std::list<Array<Set<int> > >::iterator l = mylist.begin(); l!=mylist.end(); ++l) {
@@ -107,8 +103,51 @@ Array<Array<Set<int> > > types_from_vertices(const Array<Array<Set<int> > > vert
 }
 
 
+std::list<Array<Set<int> > > all_subtypes(const Array<Set<int> > curr) {
+
+	std::list<Array<Set<int> > > mylist;	// will contain types containing type
+	mylist.push_back(curr);
+	//cout<<"curr "<<curr<<endl;
+	std::list<Array<Set<int> > >::iterator curr_v = mylist.begin();
+
+	while (curr_v!=mylist.end()) {	// perform BFS on mylist
+							
+		for (int j = 0; j < curr_v->size(); ++j) {	// go thru entries of current vertex
+			Set<int> & set = (*curr_v)[j];	// current entry of curr_v
+			
+			if (set.size() > 1) {
+				
+				Array<Set<int> > subsets = enumerate_subsets(set);
+				int setsize=set.size();
+				
+				for (Array<Set<int> >::iterator sit = subsets.begin(); sit != subsets.end(); ++sit) {
+				// for each subset of s ...
+					if (setsize > sit->size()){
+						Array<Set<int> > next = *curr_v;
+						next[j] = *sit;	// create a type with current 	position j replaced by that subset
+						mylist.push_back(next);
+						//cout<<"next "<<next<<endl;
+					}
+				}
+				
+				++curr_v;	// proceed
+				break;
+			}
+			else if (j==curr_v->size()-1) {
+				++curr_v;
+				break;
+			}
+		}
+	}
+	return mylist;
+
+}
+
+
 
 Function4perl(&types_from_vertices, "types_from_vertices");
 
-} }
+
+
+} } // end of namespaces
 

@@ -17,11 +17,11 @@
 
 namespace polymake { namespace tom {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
-   FunctionWrapper4perl( bool (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> const&, int, int) ) {
-      perl::Value arg0(stack[0]), arg1(stack[1]), arg2(stack[2]);
-      IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Array< Set< int > > > > >(), arg1, arg2 );
+   FunctionWrapper4perl( pm::Array<pm::Set<int, pm::operations::cmp>, void> (pm::Set<int, pm::operations::cmp> const&) ) {
+      perl::Value arg0(stack[0]);
+      IndirectWrapperReturn( arg0.get< perl::TryCanned< const Set< int > > >() );
    }
-   FunctionWrapperInstance4perl( bool (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> const&, int, int) );
+   FunctionWrapperInstance4perl( pm::Array<pm::Set<int, pm::operations::cmp>, void> (pm::Set<int, pm::operations::cmp> const&) );
 
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }

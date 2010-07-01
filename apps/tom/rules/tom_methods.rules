@@ -372,15 +372,17 @@ user_method REFINEMENT {
 	
 	my @r=();
 	
-	foreach (@t) {			# go thru input type
-		my $a=$_;
-		foreach (@o) {
-			my @i= @{intersect($a,$_)};
+	TYPE: foreach (@t) {			# go thru input type
+		my $a=new Set<Int>($_);
+		foreach (@o) {		# go thru sets in ordered partition
+			my $b=new Set<Int>($_);
+			my @i= @{$a*$b};#@{intersect($a,$_)};
 			if (@i) {
 				push(@r,\@i);
-				last;
+				next TYPE;
 			}
 		}
+		push(@r,$a);	# take care of the case where we do only have a partial ordered partition (i.e., last set is omitted)
 	}
 	return new Array<Set<Int>>(@r);
 }
@@ -454,26 +456,6 @@ sub contains {
 }	
 
 
-
-# Compute the intersection of two sets -- to be replaced by common function.
-sub intersect {
-	my ($a, $b)=@_;
-	my @a=@$a;
-	my @b=@$b;
-	
-	my @r=();	
-	
-	foreach (@a) {
-		my $x=$_;
-		foreach (@b) {
-			if ($x == $_) {
-				push (@r,$x);
-			}
-		}	
-	}
-	return \@r;
-}
-
 # compute the complement of a set s in [d]
 sub compl {
 	my ($s, $d) = @_;
@@ -515,6 +497,69 @@ user_method typeminus {
 	}
 	return \@r;
 }
+
+
+
+# @category Type manipulation
+# Returns a list of all subtypes of a given type //type//.
+# @param Array<Set<Int>> type
+# @return Array<Array<Set<Int>>>
+user_method all_subtypes {
+	my ($self, $t)=@_;
+
+	my $d=$self->RANK;
+
+	my $set=range(1, $d);
+	my @op=();
+	
+	return rec_subtypes($self, $t, $set, @op);
+}
+
+
+sub rec_subtypes {
+	my ($tom, $t, $set, @op)=@_;
+	
+	my @list=();
+	push(@list, $t);
+	
+	my $s=enumerate_subsets($set);
+#	print "all subsets of $set:\n@$s\n\n";
+	
+	foreach (@$s) {
+#		print "current subset of $set: $_\n";
+		my $new_set=$set-$_;
+		my @new_op=@op;
+		push(@new_op,$_);
+#		print "type: ";
+#		foreach (@$t) { print "{@$_} ";} print "\n";
+#		print "partition: @new_op\n";
+
+		my $new_t=$tom->REFINEMENT($t,\@new_op);
+#		print "refinement: $new_t";
+	
+		unless(type_equals($t,$new_t)) {
+#			print "unequal\n\n";
+			my $r=rec_subtypes($tom, $new_t, $new_set, @new_op);
+			push(@list,@$r);
+		}
+	}
+	return \@list;
+}
+
+sub type_equals {
+	my ($t1,$t2)=@_;
+	
+	for (my $i=0; $i<@$t1; ++$i) {
+		my $s1=new Set<Int>($t1->[$i]);
+		my $s2=new Set<Int>($t2->[$i]);
+		unless ($s1==$s2){
+			return 0;
+		}
+	}
+	return 1;
+}
+
+
 
 }  # end TropicalOrientedMatroid
 

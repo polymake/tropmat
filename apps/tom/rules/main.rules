@@ -18,8 +18,8 @@ INCLUDE
   functions.rules
   tom_properties.rules
   tom_methods.rules
-  visual_dual.rules
   visual.rules
+  visual_dual.rules
   examples.rules
   
 object TropicalOrientedMatroid {

@@ -21,9 +21,20 @@
 ///==== this line controls the automatic file splitting: max.instances=40
 
 #include <Set.h>
+#include <Array.h>
 
 namespace polymake { namespace common {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
+   template <typename T0, typename T1>
+   FunctionInterface4perl( new_X, T0,T1 ) {
+      perl::Value arg0(stack[1]);
+      WrapperReturnNew(T0, (arg0.get<T1>()) );
+   };
+
    OperatorInstance4perl(Binary_add, perl::Canned< const Set< int > >, perl::Canned< const Set< int > >);
+   FunctionInstance4perl(new_X, Set< int >, perl::Canned< const pm::Series<int, true> >);
+   DisabledFunction4perl(:mul, perl::TryCanned< const Array< int > >, perl::Canned< const Set< int > >);
+   DisabledFunction4perl(:mul, perl::Canned< const Set< int > >, perl::TryCanned< const Array< int > >);
+   DisabledFunction4perl(:_eq, perl::TryCanned< const Array< int > >, perl::Canned< const Set< int > >);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }

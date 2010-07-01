@@ -84,7 +84,6 @@ user_function minkowski_cell {
 
 
 
-
 # @category Producing a TropicalOrientedMatroid
 # @param TropicalOrientedMatroid T
 # @param Int h1 index of the first hyperplane involved
