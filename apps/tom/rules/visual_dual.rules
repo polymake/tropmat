@@ -1,0 +1,216 @@
+
+object TropicalOrientedMatroid {
+
+
+###########################
+# helper functions
+###########################
+
+# projects a 3-dim standard simplex in R4 to R3.
+sub ortho_project {
+	my ($poly) = @_;
+	my @vs = @{$poly->VERTICES};
+	my @nvs = ();
+	foreach (@vs) {
+		my @v=@{$_};
+		#print "@v";
+		
+		my @nv = ();
+		$nv[0]=1;
+		for (my $i=1; $i<4; ++$i) {
+			$nv[$i] = $v[$i] - 1/3*$v[4];
+		}
+		#print "		@nv\n";
+		push(@nvs,\@nv);
+	}
+	
+	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
+	return $r;
+}
+
+# shifts pseudohyperplanes so that one can see them
+sub shift_php {
+	my ($poly, $number)=@_;
+	my @vs = @{$poly->VERTICES};
+	my @nvs = ();	# new vertices
+	foreach (@vs) {
+		my @v=@{$_};
+		
+		my @nv = ();	# new vertex
+		$nv[0]=1;
+		for (my $i=1; $i<4; ++$i) {
+			$nv[$i] = $v[$i]+$number*.1;
+		}
+		push(@nvs,\@nv);
+	}
+	
+	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
+#	my $r = new polytope::Polytope<Float>(VERTICES=>\@vs);
+
+	return $r;
+	
+
+}
+
+
+sub get_color_hsv {
+	my ($ind, $total) = @_;
+	my $r=new HSV(360/$total*$ind,1,1);
+	return $r;
+}
+sub get_color {	# tud
+	my ($ind, $total) = @_;
+	my $i;
+	if ($total>=12) {
+		$i=($ind+1)% 12;
+	}
+	else {
+		$i=int(12/$total)*$ind+1;
+	}
+	return 'tud'.$i.'b';
+}
+
+
+
+# set difference
+sub setminus {
+	my ($set, $ss)=@_;
+	my @ret=();
+	foreach (@$set) {
+		unless (cont_elt($ss,$_)) {	push(@ret, $_);	}
+	}
+	return \@ret;
+}
+
+###########################
+# dual helper functions
+###########################
+
+sub visual_dual_php_gen_pos {
+	my ($self, $php)=@_;
+	
+	my $d=$self->DIM;
+	my $vertices=$self->PSEUDOHYPERPLANE($php);
+	
+	if ($d >= 4) {
+		die "don't know how to visulize $d-dimensional polytopal complex";
+	}
+
+	my @cells_visual=();
+
+    if ($d == 2) {
+    	foreach (@{$vertices}) {
+    		foreach (dual_of_cell($_,$php,$d)) {
+    			push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden' )));
+    		}
+    	}
+    }
+    
+    if ($d == 3) {
+    	foreach (@{$vertices}) {
+    		foreach (dual_of_cell($_,$php,$d)) {
+    			my $temp=ortho_project($_);
+    			push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden' )));
+    		}
+    	}
+    }
+    
+   visualize(new Visual::TropicalOrientedMatroid( Name => "Dual",
+					TropicalOrientedMatroid => $self,
+					@cells_visual));
+}
+
+
+# returns the list of cells constituting the dual of a php in a given full-dimensional cell of a mixsd
+sub dual_of_cell {
+#	print "dual_of_cell\n";
+	my ($v, $php, $d) = @_;
+	# v is the current vertex, php the index of the php under consideration and d the dimension
+	my $entry = $v->[$php-1];
+	# entry is the entry of the current hyperplane
+
+	my @dual_cells=();	# will contain dual cells
+
+	for (my $i=0; $i<@$entry-1; ++$i) {
+		for (my $j=$i+1; $j<@$entry; ++$j) {
+			my @entry=@$entry;
+			my $p=get_base_cell($entry[$i],$entry[$j],$entry,$d);
+			
+			my $m=$p;
+			for (my $k=0; $k<@$v; ++$k) {
+				unless ($k+1==$php) {
+					my @vs=@{$v->[$k]};
+					my $tmp=simplex_face($d+1,@vs);
+					$m = polytope::minkowski_sum(1, $m, 1, $tmp);
+				}
+			}
+			push(@dual_cells, $m);
+		}
+	}
+	return @dual_cells;
+}
+
+# the dual of a simplex cell
+sub get_base_cell {
+	# any cell in the dual of a simplex is defined by two edges
+	my ($i,$j,$entry,$d)=@_;
+	# i and j define the edge, entry is the current entry, d the dimension of the tom
+	my @set=sort($i,$j);
+	my $rest=setminus($entry,\@set);
+	my $all_ss=all_subsets($rest,\@set);
+	my @vertices=();
+	
+	foreach (@$all_ss) {
+		push(@vertices,center_of_cell($d,$_));
+	}
+	my $p=new Polytope<Float>(VERTICES=>\@vertices);
+	return $p;
+}
+
+# all subsets of a given set containing a given subset
+sub all_subsets {
+	my ($set, $start)=@_;
+	my @s=@$set;
+	my @ret=(); push(@ret, $start);
+	
+	my @r=@{all_ss_rec($set, \@ret)};
+	my $size=@r;
+	return \@r;
+}
+sub all_ss_rec {
+#	print "all_ss_rec\n";
+	my ($set, $sets)=@_;
+#	print "set: @$set\n";
+	unless (@$set) { return $sets; }
+	
+	my $next_elt= pop(@$set);
+	my @sets = @{all_ss_rec($set, $sets)};
+	my $size=@sets;
+#	print "sets: $size\n";
+#	foreach(@sets){
+#		print "@$_";
+#	}print "\n";
+	
+	my @ret=@sets;
+	foreach (@sets) {
+		my @curr_set=@$_;
+		my @copy=@curr_set;
+		push(@copy,$next_elt);
+		my @next_set=sort(@copy);
+		push(@ret,\@next_set);
+	}
+	return \@ret;
+}
+
+# the center of a given simplex face
+# cell is a list of the vertices of the cell
+sub center_of_cell {
+	my ($d, $cell) = @_;
+	my $sf=simplex_face($d+1, @$cell);
+	my $vb= $sf->VERTEX_BARYCENTER;
+	return $vb;
+}
+
+
+
+} # end TropicalOrientedMatroid

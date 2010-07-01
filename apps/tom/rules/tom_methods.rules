@@ -100,12 +100,21 @@ user_method CONTRACTION : TOPES, RANK, N_PHP {
 user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
 	
 	my ($self, $perm) = @_;
-	my @p = @$perm;
 	my $d = $self->RANK;
-	my @v = @{$self->VERTICES};
-	if (@p != $d) {
-		die "argument is not a permutation of [$d].";
+	
+	my @p;
+	if (defined($perm)) {
+		@p = @$perm;
+		if (@p != $d) {
+			die "argument is not a permutation of [$n].";
+		}
+	} else {
+		@p=();
+		for (my $i=1; $i<=$d; ++$i) {
+			push(@p,$i);
+		}
 	}
+	my @v = @{$self->VERTICES};
 
 	my @r = ();		# will contain new vertices
 	
@@ -141,13 +150,24 @@ user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
 # @return TropicalOrientedMatroid
 user_method D_PLACING : VERTICES, RANK, DIM, N_PHP {
 	my ($self, $perm) = @_;
-	my @p = @$perm;
+	
 	my $n = $self->N_PHP;
 	my $d = $self->RANK;
-	my @v = @{$self->VERTICES};
-	if (@p != $n) {
-		die "argument is not a permutation of [$n].";
+
+	my @p;
+	if (defined($perm)) {
+		@p = @$perm;
+		if (@p != $n) {
+			die "argument is not a permutation of [$n].";
+		}
+	} else {
+		@p=();
+		for (my $i=1; $i<=$n; ++$i) {
+			push(@p,$i);
+		}
 	}
+
+	my @v = @{$self->VERTICES};
 	my @r = ();		# will contain new vertices
 
 	my @old_height=@v;

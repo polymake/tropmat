@@ -20,6 +20,25 @@ user_method VISUAL_ALL : VERTICES, DIM, N_PHP{
 }
 precondition : DIM {$this->DIM<=3, $this->DIM>=2}
 
+
+
+# @category Visualization
+# Visualizes the //i//-th dual pseudohyperplane.
+# @param Int i
+# @return Visual::TropicalOrientedMatroid
+user_method VISUAL_DUAL_PHP : VERTICES, DIM, GENERAL_POSITION {
+	my ($self, $php)=@_;
+	
+	if ($self->GENERAL_POSITION) {
+		visual_dual_php_gen_pos($self,$php);
+	} else {
+		visual_dual_php_non_gen_pos($self,$php);
+	}
+}
+precondition : DIM { $this->DIM<=3, $this->DIM>=2 }
+weight 3.0;
+
+
 # @category Visualization
 # Visualises the given dual pseudohyperplanes in different colours.
 # @param Set<Int> phps
@@ -50,15 +69,16 @@ user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 	foreach (@h) {
 		my $php=$_;
 		my $vertices=$self->PSEUDOHYPERPLANE($php);
+
+		my $h=@h;
 		my $hue=$angle*$count;
 
 		if ($d == 2) {
 			foreach (@{$vertices}) {
 				foreach (dual_of_cell($_,$php,$d)) {
-					my $hsv=new HSV($hue,1,1);
-					my $rgb=new RGB($hsv);
-#					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', EdgeColor=>$hsv)));
-					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden' )));
+					#my $rgb=new get_color($count, $h);
+					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', EdgeColor=>get_color($count, $h))));
+					#push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden' )));
 				}
 			}
 		}
@@ -67,7 +87,8 @@ user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 			foreach (@{$vertices}) {
 				foreach (dual_of_cell($_,$php,$d)) {
 					my $temp=ortho_project($_);
-					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', FacetColor=>new HSV($hue,1,1) )));
+					#push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', FacetColor=>new HSV($hue,1,1) )));
+					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', FacetColor=>get_color($count, $h))));
 				}
 			}
 		}
@@ -79,47 +100,6 @@ user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 					@cells_visual));
 }
 precondition : DIM {$this->DIM<=3, $this->DIM>=2}
-
-
-# @category Visualization
-# Visualizes the //i//-th dual pseudohyperplane.
-# @param Int i
-# @return Visual::TropicalOrientedMatroid
-user_method VISUAL_DUAL_PHP : VERTICES, DIM {
-	my ($self, $php)=@_;
-	
-	my $d=$self->DIM;
-	my $vertices=$self->PSEUDOHYPERPLANE($php);
-	
-	if ($d >= 4) {
-		die "don't know how to visulize $d-dimensional polytopal complex";
-	}
-
-	my @cells_visual=();
-
-    if ($d == 2) {
-    	foreach (@{$vertices}) {
-    		foreach (dual_of_cell($_,$php,$d)) {
-    			push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden' )));
-    		}
-    	}
-    }
-    
-    if ($d == 3) {
-    	foreach (@{$vertices}) {
-    		foreach (dual_of_cell($_,$php,$d)) {
-    			my $temp=ortho_project($_);
-    			push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden' )));
-    		}
-    	}
-    }
-    
-   visualize(new Visual::TropicalOrientedMatroid( Name => "Dual",
-					TropicalOrientedMatroid => $self,
-					@cells_visual));
-
-}
-precondition : DIM { $this->DIM<=3, $this->DIM>=2 }
 
 
 # @category Visualization
@@ -219,7 +199,64 @@ user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
 }
 precondition : DIM { $this->DIM<=3 }
 
+# @category Visualization
+# Visualizes the intersection of the given pseudohyperplanes.
+# @param Set<int> phps
+# @return Visual::TropicalOrientedMatroid
+user_method VISUAL_INTERSECTION : VERTICES, DIM {
+	my ($self, $hps)=@_;
+	my @h;
+	if ($hps=='All') {
+		@h=();
+		for (my $i=1; $i<=$self->N_PHP; ++$i){
+			push(@h,$i);
+		}
+	} else {
+		@h = @{$hps};
+	}
+	my $d=$self->DIM;
 
+	my @v=@{$self->VERTICES};
+	my @r=();	# will contain types in the intersection
+	
+	VERTICES: foreach (@v) {		# go thru VERTICES
+		my @s=@{$_};
+		foreach (@h){				# go thru hyperplanes
+			unless (@{$s[$h-1]} >= 2) {
+				next VERTICES;
+			}
+		}
+		push(@r,\@s);	# if we get here, every tested position has at least 2 elts
+	}
+
+	my $zero=new Vector<Float>($d);
+	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
+
+	# now go thru cells in intersection
+	foreach (@r) {
+		my $curr=$_;
+	
+		my $m=$origin;
+		
+		foreach (@h) {
+			my $entry=$curr->[$_];
+			for (my $i=0; $i<@$entry-1; ++$i) {
+				for (my $j=$i+1; $j<@$entry; ++$j) {
+					my @entry=@$entry;
+					my $p=get_base_cell($entry[$i],$entry[$j],$entry,$d);
+				}
+			}
+		}
+	}
+
+}
+
+
+
+
+###########################
+# helper functions
+###########################
 
 # projects a 3-dim standard simplex in R4 to R3.
 sub ortho_project {
@@ -268,84 +305,24 @@ sub shift_php {
 }
 
 
-sub dual_of_cell {
-#	print "dual_of_cell\n";
-	my ($v, $php, $d) = @_;
-	# v is the current vertex, php the index of the php under consideration and d the dimension
-	my $entry = $v->[$php-1];
-	# entry is the current entry
-
-	my @dual_cells=();	# will contain dual cells
-
-	for (my $i=0; $i<@$entry-1; ++$i) {
-		for (my $j=$i+1; $j<@$entry; ++$j) {
-			my @entry=@$entry;
-			my $p=get_base_cell($entry[$i],$entry[$j],$entry,$d);
-			
-			my $m=$p;
-			my $size=@$v;
-			for (my $k=0; $k<@$v; ++$k) {
-				unless ($k+1==$php) {
-					my @vs=@{$v->[$k]};
-					my $tmp=simplex_face($d+1,@vs);
-					$m = polytope::minkowski_sum(1, $m, 1, $tmp);
-				}
-			}
-			push(@dual_cells, $m);
-		}
+sub get_color_hsv {
+	my ($ind, $total) = @_;
+	my $r=new HSV(360/$total*$ind,1,1);
+	return $r;
+}
+sub get_color {	# tud
+	my ($ind, $total) = @_;
+	my $i;
+	if ($total>=12) {
+		$i=($ind+1)% 12;
 	}
-	return @dual_cells;
+	else {
+		$i=int(12/$total)*$ind+1;
+	}
+	return 'tud'.$i.'b';
 }
 
-sub get_base_cell {
-	# any cell in the dual of a simplex is defined by two edges
-	my ($i,$j,$entry,$d)=@_;
-	my @set=sort($i,$j);
-	my $rest=setminus($entry,\@set);
-	my $all_ss=all_subsets($rest,\@set);
-	my @vertices=();
-	
-	foreach (@$all_ss) {
-		push(@vertices,center_of_cell($d,$_));
-	}
-	my $p=new Polytope<Float>(VERTICES=>\@vertices);
-	return $p;
-}
 
-# all subsets of a given set containing a given subset
-sub all_subsets {
-	my ($set, $start)=@_;
-	my @s=@$set;
-	my @ret=(); push(@ret, $start);
-	
-	my @r=@{all_ss_rec($set, \@ret)};
-	my $size=@r;
-	return \@r;
-}
-sub all_ss_rec {
-#	print "all_ss_rec\n";
-	my ($set, $sets)=@_;
-#	print "set: @$set\n";
-	unless (@$set) { return $sets; }
-	
-	my $next_elt= pop(@$set);
-	my @sets = @{all_ss_rec($set, $sets)};
-	my $size=@sets;
-#	print "sets: $size\n";
-#	foreach(@sets){
-#		print "@$_";
-#	}print "\n";
-	
-	my @ret=@sets;
-	foreach (@sets) {
-		my @curr_set=@$_;
-		my @copy=@curr_set;
-		push(@copy,$next_elt);
-		my @next_set=sort(@copy);
-		push(@ret,\@next_set);
-	}
-	return \@ret;
-}
 
 # set difference
 sub setminus {
@@ -357,13 +334,6 @@ sub setminus {
 	return \@ret;
 }
 
-# the center of a given simplex face
-sub center_of_cell {
-	my ($d, $cell) = @_;
-	my $sf=simplex_face($d+1, @$cell);
-	my $vb= $sf->VERTEX_BARYCENTER;
-	return $vb;
-}
 
 
 }	# end TropicalOrientedMatroid

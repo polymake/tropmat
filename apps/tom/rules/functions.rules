@@ -1,3 +1,30 @@
+# @category Producing from given data
+# Produces the (realisable) tropical oriented matroid of a given tropical polytope //T//
+# @param tropical::TropicalPolytope T
+# @return TropicalOrientedMatroid
+user_function tom_from_tropical_polytope {
+	my $poly=shift;
+	
+	my @vs=@{$poly->PSEUDOVERTEX_TYPES};
+	my @tvs=();	# vertices of tom (add 1 everywhere)
+	
+	foreach (@vs) {		# go thru list of type
+		my @vertex=@{$_}; 
+		my @newvertex=();
+		for (my $i=0; $i<@vertex; ++$i) {	# go thru entries of current vertex
+			my @newentry=();
+			for (my $j=0; $j<@{$vertex[$i]}; ++$j) {	# go thru elts of current entry
+				my $tmp=$vertex[$i]->[$j];
+				push(@newentry,$tmp+1);
+			}
+			push(@newvertex,\@newentry);
+		}
+		push(@tvs,\@newvertex);
+	}
+
+	return new TropicalOrientedMatroid(VERTICES=>\@tvs);
+}
+
 # @category Producing a polytope
 # Returns the face of a standard //d//-simplex spanned by the vertices in //vertices//.
 # @param Int d the dimension of the simplex
