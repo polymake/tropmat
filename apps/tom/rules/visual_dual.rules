@@ -49,7 +49,6 @@ sub visual_dual_php_non_gen_pos {
 
 
 sub dual_of_cell {
-#	print "dual_of_cell\n\n";
 	my ($tom, $v, $php) = @_;
 #	print "vertex: "; foreach(@$v){print "{@$_} "}; print "\n";
 	# v is the current vertex, php the index of the php under consideration
@@ -79,8 +78,7 @@ sub dual_of_cell {
 				}
 			}
 #			print "vertices:\n"; foreach (@vertices){print "$_\n";} print "\n";
-			my $m=new Polytope<Rational>(POINTS=>\@vertices);
-
+			my $m=new Polytope<Float>(POINTS=>\@vertices);
 			push(@dual_cells, $m);							
 		}
 	}

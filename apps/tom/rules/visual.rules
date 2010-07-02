@@ -72,9 +72,17 @@ user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, 
 		
 		if ($d == 3) {
 			foreach (@{$vertices}) {
-				foreach (dual_of_cell($self, $_,$php)) {
+				my @duals=dual_of_cell($self, $_,$php);
+				#foreach (dual_of_cell($self, $_,$php)) {
+#				my $no=@duals; print "number: $no\n";
+				foreach(@duals){
+#					print "test\n";
 					my $temp=ortho_project($_);
+#					print "ortho_project\n";
+					my $tmpvs=$temp->VERTICES;
+#					print "vertices: $tmpvs\n";
 					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', $decor )));
+#					print "visual\n";
 				}
 			}
 		}
@@ -86,7 +94,7 @@ user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, 
 
 }
 precondition : DIM { $this->DIM<=3, $this->DIM>=2 }
-
+#}
 
 # @category Visualization
 # Visualises the given dual pseudohyperplanes in different colours.
@@ -308,6 +316,13 @@ sub ortho_project {
 		$nv[0]=1;
 		for (my $i=1; $i<4; ++$i) {
 			$nv[$i] = $v[$i] - 1/3*$v[4];
+#			my $tmp1 = $v[$i] - 1/3*$v[4];
+#			print "tmp: $tmp1\n";
+#			my $tmp=numerator($tmp1)/denominator($tmp1);
+#			print "tmp: $tmp\n";
+#			my $tmp2=(int(100*$tmp))/100;
+#			print "rounded: $tmp2\n";
+#			$nv[$i]=$tmp2;
 		}
 		#print "		@nv\n";
 		push(@nvs,\@nv);
