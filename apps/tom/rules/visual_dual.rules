@@ -51,6 +51,7 @@ sub visual_dual_php_non_gen_pos {
 sub dual_of_cell {
 	my ($tom, $v, $php) = @_;
 #	print "vertex: "; foreach(@$v){print "{@$_} "}; print "\n";
+
 	# v is the current vertex, php the index of the php under consideration
 	my $d=$tom->RANK;
 	my $entry = new Array<Int>($v->[$php-1]);

@@ -519,14 +519,17 @@ user_method all_subtypes {
 sub rec_subtypes {
 	my ($tom, $t, $set, @op)=@_;
 	
-	my @list=();
-	push(@list, $t);
+	my $list=new Set<Array<Set<Int>>>;
+	my $tmp=new Array<Set>($t);
+	$list+=$tmp;
 	
 	my $s=enumerate_subsets($set);
 #	print "all subsets of $set:\n@$s\n\n";
 	
-	foreach (@$s) {
+	foreach (@$s) { # now go thru all subsets of the set of remaining entries...
 #		print "current subset of $set: $_\n";
+
+		# and choose one as the next set in the ordered partition
 		my $new_set=$set-$_;
 		my @new_op=@op;
 		push(@new_op,$_);
@@ -538,12 +541,11 @@ sub rec_subtypes {
 #		print "refinement: $new_t";
 	
 		unless(type_equals($t,$new_t)) {
-#			print "unequal\n\n";
 			my $r=rec_subtypes($tom, $new_t, $new_set, @new_op);
-			push(@list,@$r);
+			$list+=$r;
 		}
 	}
-	return \@list;
+	return $list;
 }
 
 sub type_equals {

@@ -1,0 +1,116 @@
+sub topcom {
+	my $filename=shift;
+	
+	open FILE, "<", $filename or die $!;
+	
+	my $i=1;
+	while (<FILE>) {
+	
+		my @v=simpprod2tom($_);
+		
+		my $t=new TropicalOrientedMatroid(VERTICES=>\@v, NAME=>"tom$i");
+		++$i;
+		
+		print "TOM $i\n";
+		print "boundary: ".$t->BOUNDARY_AXIOM."\n";
+		print "surrounding: ".$t->SURROUNDING_AXIOM."\n";
+		print "comparability: ".$t->COMPARABILITY_AXIOM."\n";
+		print "elimination: ".$t->ELIMINATION_AXIOM."\n";
+		print "Axioms: ".$t->IS_TOM."\n\n";
+		
+		save($t,$t->NAME);
+	}
+
+}
+
+
+sub simpprod2tom {
+	my $t=shift;
+	
+	my $n;
+	my $d;
+	
+	my $index;
+	my @triang;
+
+	if ($t =~ /^T\[(\d+)\] := \[(\d+),(\d+):{(.+)}.*/x) {
+		$index=int($1);
+		my $x=$3+1;
+		my $y=$2;
+		$n=$x/2+sqrt($x*$x/4-$y)-1;
+		$d=$x-$n-2;
+		print "n $n\nd $d\n";
+		@triang=evaltriang($4);
+		
+		#print "triang:\n"; foreach (@triang){print "{@$_}  ";} print "\n";
+	}
+
+	my @vertices=();
+
+	foreach (@triang) {
+		push(@vertices,vertex2type($_, $n,$d));
+	}
+
+	return @vertices;
+}
+
+
+sub vertex2type {
+	my ($v,$n,$d)=@_;
+	
+	my @curr=();
+	
+	foreach my $e (@$v) {
+		my @b=@{inbase($e,$d+1)};
+	
+		push(@{$curr[$b[0]]},$b[1]+1);
+	}
+	
+#	print "v: @$v\n";
+#	print "t: "; foreach (@curr) {print "(@$_)";} print "\n";
+	
+	return \@curr;
+}
+
+sub inbase {
+	my ($n,$b)=@_;
+
+	my $u=$n % $b;
+	my $v=($n-$u)/$b;
+	
+	my @r=($v,$u);
+	
+#	print $n." = ".$v." * ".$b." + ".$u."\n";
+	return \@r;
+}
+
+sub evaltriang {
+	my $t=shift;
+
+	my @triang=();
+	
+	if ($t) {
+		if ($t =~ /{(.+?)},?(.*)/x) {
+			push(@triang, evalsimplex($1));
+			push(@triang, evaltriang($2));
+		}
+	}
+	return @triang;	
+}
+
+
+sub evalsimplex {
+	my $s=shift;
+	my @simplex=();
+	
+	if ($s) {
+		if ($s=~ /([0-9]+)(?:,(.*))?/x) {
+			push(@simplex,int($1));
+			push(@simplex,@{evalsimplex($2)});
+		}
+	}
+	return \@simplex;
+}
+
+
+#simpprod2tom("T[1]:=[18,8:{{0,1,2,3,6,9,12,15},{2,5,6,7,8,9,12,15},{2,5,8,11,14,15,16,17},{2,5,7,11,12,13,14,16},{1,4,7,10,11,12,13,16},{2,5,7,8,11,14,15,16},{1,3,5,7,9,12,15,16},{1,4,7,9,10,11,12,16},{1,2,3,5,6,9,12,15},{1,4,5,7,11,12,13,16},{1,2,5,7,11,12,13,16},{1,3,4,5,7,9,12,16},{2,5,7,8,11,12,14,15},{2,5,7,11,12,14,15,16},{1,3,5,6,7,9,12,15},{2,5,7,8,9,11,12,15},{1,2,5,7,9,12,15,16},{1,2,5,6,7,9,12,15},{1,4,5,7,9,11,12,16},{2,5,7,9,11,12,15,16},{1,2,5,7,9,11,12,16}}];");

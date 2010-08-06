@@ -278,8 +278,7 @@ user_method VISUAL_INTERSECTION : VERTICES, DIM {
 	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
 
 	# now go thru cells in intersection
-	foreach (@r) {
-		my $curr=$_;
+	foreach my $curr (@r) {
 	
 		my $m=$origin;
 		
@@ -310,21 +309,12 @@ sub ortho_project {
 	my @nvs = ();
 	foreach (@vs) {
 		my @v=@{$_};
-		#print "@v";
 		
 		my @nv = ();
 		$nv[0]=1;
 		for (my $i=1; $i<4; ++$i) {
 			$nv[$i] = $v[$i] - 1/3*$v[4];
-#			my $tmp1 = $v[$i] - 1/3*$v[4];
-#			print "tmp: $tmp1\n";
-#			my $tmp=numerator($tmp1)/denominator($tmp1);
-#			print "tmp: $tmp\n";
-#			my $tmp2=(int(100*$tmp))/100;
-#			print "rounded: $tmp2\n";
-#			$nv[$i]=$tmp2;
 		}
-		#print "		@nv\n";
 		push(@nvs,\@nv);
 	}
 	

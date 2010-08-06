@@ -1,6 +1,11 @@
 
 object TropicalOrientedMatroid {
 
+
+# @category Basic properties
+# A name for the tropical oriented matroid.
+property NAME : String;
+
 # @category Basic properties
 # Dimension of the tropical oriented matroid.
 # DIM=[[RANK]]-1.

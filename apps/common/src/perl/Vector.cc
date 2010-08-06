@@ -33,5 +33,6 @@ namespace polymake { namespace common {
 
    FunctionInstance4perl(new_int, Vector< double >);
    OperatorInstance4perl(assign, pm::IndexedSlice<pm::masquerade<pm::ConcatRows, pm::Matrix_base<double>&>, pm::Series<int, true>, void>, perl::Canned< const pm::VectorChain<pm::SingleElementVector<double>, pm::Vector<double> const&> >);
+   OperatorInstance4perl(Binary__or, int, perl::Canned< const Vector< double > >);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }
