@@ -1,5 +1,5 @@
 # @category Producing from given data
-# Produces the (realisable) tropical oriented matroid of a given tropical polytope //T//
+# Produces the (realisable) tropical oriented matroid of a given tropical polytope //T//. (Just to help off the rather deplorable fact that the application ''tropical oriented matroid'' used every other application except ''tropical'' and ''matroid''.)
 # @param tropical::TropicalPolytope T
 # @return TropicalOrientedMatroid
 user_function tom_from_tropical_polytope {

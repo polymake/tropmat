@@ -1,6 +1,8 @@
 
 # @topic application
-# This application deals with __T__ropical __o__riented __m__atroids.
+# This application deals with __T__ropical __o__riented __m__atroids (toms) as defined by Ardila and Develin. TropicalOrientedMatroids are defined via their [[TYPES]] (or some subsets, such as its [[VERTICES]] or [[TOPES]]).
+# 
+# One can for instance check whether an object defined in this way does actually [[satisfy the axioms|IS_TOM]] of tropical oriented matroids. Moreover, one can perform simple transformation such as [[CONTRACTION]] and [[DELETION]]. For toms of [[dimension|DIM]] at most 3, there are also quite elaborate visualisation methods.
 # 
 # Contained in extension ''tropmat''.
 
@@ -14,7 +16,6 @@ declare object TropicalOrientedMatroid;
 
 # these rules are intrinsic: they don't depend on any external software to be installed separately
 INCLUDE
-  #type.rules
   functions.rules
   tom_properties.rules
   tom_methods.rules
@@ -106,17 +107,14 @@ rule COMPARABILITY_AXIOM : TYPES, RANK {
 weight 2.00;
 
 rule ELIMINATION_AXIOM : TYPES, N_PHP {
+# this just performs a brute force search
 	my @v = @{$this->TYPES};
 	
 	for (my $i=0; $i<@v-1; ++$i) {
-#		print "i: $i\n";
 		for (my $j=$i+1; $j<@v; ++$j) {
-#			print "j: $j\n";
 			for (my $k=1; $k <= $this->N_PHP; ++$k) {
-#				print "k: $k\n";
 				my $e=$this->ELIMINATION($v[$i],$v[$j],$k);
 				unless ($e==0) {
-					#print "$v[$i]\n $v[$j]\n $k\n";
 					$this->ELIMINATION_AXIOM= 0;
 				}
 			}

@@ -1,7 +1,7 @@
-#include <polymake.h>
-#include <Set.h>
-#include <Array.h>
-#include <list>
+#include "polymake/client.h"
+#include "polymake/Set.h"
+#include "polymake/Array.h"
+#include "polymake/list"
 #include <iostream>
 
 

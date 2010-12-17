@@ -9,33 +9,27 @@ property NAME : String;
 # @category Basic properties
 # Dimension of the tropical oriented matroid.
 # DIM=[[RANK]]-1.
-#
 property DIM : Int;
 
 # @category Basic properties
 # Rank of the tropical oriented matroid.
 # RANK=[[DIM]]+1.
-#
 property RANK : Int;
 
 # @category Basic properties
 # Number of pseudohyperplanes.
-# 
 property N_PHP : Int; 
 
 # @category Basic properties
 # Number of [[TOPES]].
-#
 property N_TOPES : Int; 
 
 # @category Basic properties
 # Number of [[VERTICES]].
-#
 property N_VERTICES : Int; 
 
 # @category Basic properties
 # Number of [[TYPES]].
-#
 property N_TYPES : Int; 
 
 
@@ -43,12 +37,10 @@ property N_TYPES : Int;
 # The topes of a tropical oriented matroids are all types of [[TYPE_RANK|rank]] [[DIM]],
 # i.e., all types all of whose entries are singletons. The graph of a tope consists of
 # isolated vertices.
-#
 property TOPES : Array<Array<Set<Int>>>;
 
 # @category Basic properties
 # The vertices of a tropical oriented matroids are all types of [[TYPE_RANK|rank]] 1.
-#
 property VERTICES : Array<Array<Set<Int>>>;
 
 # @category Basic properties
@@ -62,18 +54,15 @@ property TYPES : Array<Array<Set<Int>>>;
 # 	[[N_TOPES]] = [[binomial]](n+d, d),
 # i.e., if every "integral" point in the simplex n&Delta;<sup>d-1</sup> is a vertex in the
 # mixed subdivision.
-#
 property GENERAL_POSITION : Bool;
 
 
 # @category Axioms
 # The __boundary axiom__ states that all types (j, j, ..., j) for j &isin; [d] exist.
-#
 property BOUNDARY_AXIOM : Bool;
 
 # @category Axioms
 # The __surrounding axiom__ states that the [[REFINEMENT]] of every type is again a type.
-#
 property SURROUNDING_AXIOM : Bool;
 
 # @category Axioms
@@ -86,7 +75,7 @@ property ELIMINATION_AXIOM : Bool;
 
 
 # @category Axioms
-# Returns true if all axioms for a tropical oriented matroid are satisfied.
+# Returns true if all tropical oriented matroid axioms are satisfied.
 property IS_TOM : Bool;
 
 

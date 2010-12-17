@@ -1,3 +1,5 @@
+use application 'tom';
+
 sub topcom {
 	my $filename=shift;
 	
@@ -9,7 +11,6 @@ sub topcom {
 		my @v=simpprod2tom($_);
 		
 		my $t=new TropicalOrientedMatroid(VERTICES=>\@v, NAME=>"tom$i");
-		++$i;
 		
 		print "TOM $i\n";
 		print "boundary: ".$t->BOUNDARY_AXIOM."\n";
@@ -19,6 +20,8 @@ sub topcom {
 		print "Axioms: ".$t->IS_TOM."\n\n";
 		
 		save($t,$t->NAME);
+		
+		++$i;
 	}
 
 }
@@ -39,7 +42,7 @@ sub simpprod2tom {
 		my $y=$2;
 		$n=$x/2+sqrt($x*$x/4-$y)-1;
 		$d=$x-$n-2;
-		print "n $n\nd $d\n";
+#		print "n $n\nd $d\n";
 		@triang=evaltriang($4);
 		
 		#print "triang:\n"; foreach (@triang){print "{@$_}  ";} print "\n";

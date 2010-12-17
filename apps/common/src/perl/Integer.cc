@@ -12,16 +12,13 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 --------------------------------------------------------------------------------
-   $Project: polymake $$Id: bindings.cc 9691 2010-05-28 23:47:18Z gawrilow $
+   $Project: polymake $$Id: bindings.cc 9716 2010-06-28 22:22:03Z gawrilow $
 */
-
-#define INDEX_CHECKS 1
-#define DIMENSION_CHECKS 1
 
 ///==== this line controls the automatic file splitting: max.instances=40
 
-#include <Integer.h>
-
+#include "polymake/client.h"
+#include "polymake/Integer.h"
 namespace polymake { namespace common {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
    OperatorInstance4perl(Binary__eq, int, perl::Canned< const Integer >);

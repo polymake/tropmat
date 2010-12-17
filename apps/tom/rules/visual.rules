@@ -40,12 +40,12 @@ user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, 
 
 	
 	if ($self->GENERAL_POSITION) {
-#		print "gen_pos\n";
 		
 		if ($d == 2) {
 			foreach (@{$vertices}) {
 				foreach (dual_of_fine_cell($_,$php,$d)) {
-					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', $decor )));
+					my $tmp=ortho_project_2d($_);
+					push(@cells_visual,(my $pv=$tmp->VISUAL( VertexStyle=>'hidden', $decor )));
 				}
 			}
 		}
@@ -60,12 +60,12 @@ user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, 
 		}
 		
 	} else {
-#		print "non_gen\n";
 		
 		if ($d == 2) {
 			foreach (@{$vertices}) {
 				foreach (dual_of_cell($self, $_,$php)) {
-					push(@cells_visual,(my $pv=$_->VISUAL( VertexStyle=>'hidden', $decor )));
+					my $tmp=ortho_project_2d($_);
+					push(@cells_visual,(my $pv=$tmp->VISUAL( VertexStyle=>'hidden', $decor )));
 				}
 			}
 		}
@@ -73,16 +73,10 @@ user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, 
 		if ($d == 3) {
 			foreach (@{$vertices}) {
 				my @duals=dual_of_cell($self, $_,$php);
-				#foreach (dual_of_cell($self, $_,$php)) {
-#				my $no=@duals; print "number: $no\n";
 				foreach(@duals){
-#					print "test\n";
 					my $temp=ortho_project($_);
-#					print "ortho_project\n";
 					my $tmpvs=$temp->VERTICES;
-#					print "vertices: $tmpvs\n";
 					push(@cells_visual,(my $pv=$temp->VISUAL( VertexStyle=>'hidden', $decor )));
-#					print "visual\n";
 				}
 			}
 		}
@@ -125,7 +119,7 @@ user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 
 	foreach (@h) {
 		my $php=$_;
-		my $vertices=$self->PSEUDOHYPERPLANE($php);
+#		my $vertices=$self->PSEUDOHYPERPLANE($php);
 
 		my $h=@h;
 		my $hue=$angle*$count;
@@ -160,21 +154,18 @@ user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES,
     if ($d >= 4) {
 		die "don't know how to visualize the mixed subdivision of a $d-simplex\n";
     }
- 
-#    $self->Name="Mixed subdivision of ($d-1)-simplex corresponding to ".$self->name;
-	
+ 	
 	my @cells_visual = ( );
  	
    	if ($d <= 2) {
 		foreach (@{$vertices}) {
-    		my $mink = minkowski_cell($_, 3);		
+    		my $mink = ortho_project_2d(minkowski_cell($_, 3));		
 	     	push (@cells_visual, (my $pv = $mink->VISUAL( VertexStyle=>'hidden', $decor )));
 		}
 	}
 	elsif ($d == 3) {
 		foreach (@{$vertices}) {
 			my $s = minkowski_cell($_, 4);
-			#print "Dim: $s->DIM\n";
     		my $mink = ortho_project($s);		
 	     	push (@cells_visual, (my $pv = $mink->VISUAL( VertexStyle=>'hidden', $decor )));
 		}
@@ -321,6 +312,27 @@ sub ortho_project {
 	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
 	return $r;
 }
+
+# projects a 2-dim standard simplex in R3 to R2.
+sub ortho_project_2d {
+	my ($poly) = @_;
+	my @vs = @{$poly->VERTICES};
+	my @nvs = ();
+	foreach (@vs) {
+		my @v=@{$_};
+		
+		my @nv = ();
+		$nv[0]=1;
+		for (my $i=1; $i<3; ++$i) {
+			$nv[$i] = $v[$i] + (1-sqrt(3))/2*$v[3];
+		}
+		push(@nvs,\@nv);
+	}
+	
+	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
+	return $r;
+}
+
 
 # shifts pseudohyperplanes so that one can see them
 sub shift_php {
