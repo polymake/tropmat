@@ -1,7 +1,5 @@
 #include "polymake/client.h"
-#include "polymake/Set.h"
-#include "polymake/Array.h"
-
+#include "rank.h"
 
 namespace polymake { namespace tom {
 

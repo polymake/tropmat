@@ -1,3 +1,20 @@
+# @category Producing from scratch
+# Produces the uniform tropical oriented matroid with parameters //n// and //d//.
+# @param Int n
+# @param Int d
+# @return TropicalOrientedMatroid
+user_function uniform {
+	my $n=shift; my $d=shift;
+	my $t=new TropicalOrientedMatroid(VERTICES=>[[[1..$d]]]);
+	
+	my $s=$t;
+	for (my $i=1; $i<$n; ++$i) {
+		$s=$t->N_PLACING;
+		$t=$s;
+	}
+	return $t;
+}
+
 # @category Producing from given data
 # Produces the (realisable) tropical oriented matroid of a given tropical polytope //T//. (Just to help off the rather deplorable fact that the application ''tropical oriented matroid'' used every other application except ''tropical'' and ''matroid''.)
 # @param tropical::TropicalPolytope T
@@ -33,7 +50,7 @@ user_function tom_from_tropical_polytope {
 user_function simplex_face {
 	my ($d, @l) = @_;
 	my $l = @l;
-	my @vs = ();
+	my @vs = ()	;
 	
 	for (my $i=0; $i<$l; ++$i) {
 		# create a vector with one at positions 0 and i+1 and 0 elsewhere
@@ -83,6 +100,34 @@ user_function minkowski_cell {
 } 
 
 
+# @category Producing a TropicalOrientedMatroid
+# @param TropicalOrientedMatroid T
+# @param Int h1 index of the first hyperplane involved
+# @param Int h2 index of the second hyperplane involved
+# @param Int i
+# @param Int j
+# @return TropicalOrientedMatroid
+user_function tom_flip {
+	my ($t,$h1,$h2,$i,$j)=@_;
+
+	my $topes=$t->TOPES;
+	my @ntopes=();
+	
+	foreach my $tope (@$topes) {
+		my @ntope=@$tope;
+		if ($tope->[$h1-1]->[0]==$i && $tope->[$h2-1]->[0]==$j) {
+			$ntope[$h2-1]=[$i];
+			$ntope[$h1-1]=[$j];
+		} elsif ($tope->[$h1-1]->[0]==$j && $tope->[$h2-1]->[0]==$i) {
+			$ntope[$h2-1]=[$j];
+			$ntope[$h1-1]=[$i];
+		}
+		push(@ntopes,\@ntope);
+
+	}
+	return new TropicalOrientedMatroid(TOPES=>\@ntopes);
+}
+
 
 # @category Producing a TropicalOrientedMatroid
 # @param TropicalOrientedMatroid T
@@ -90,7 +135,7 @@ user_function minkowski_cell {
 # @param Int h2 index of the second hyperplane involved
 # @param Array<Int> type entries at the second position
 # @return TropicalOrientedMatroid
-user_function tom_flip {
+user_function tom_flip_old {
  my ($t,$i,$j,$s)=@_;
  my @v=@{$t->VERTICES};
   

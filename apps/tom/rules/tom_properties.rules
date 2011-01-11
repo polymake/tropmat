@@ -56,6 +56,14 @@ property TYPES : Array<Array<Set<Int>>>;
 # mixed subdivision.
 property GENERAL_POSITION : Bool;
 
+# @category Basic properties
+# The apices of the tropical (pseudo)hyperplanes of the tropical oriented matroid.
+property APICES : Array<Array<Set<Int>>>;
+
+# @category Basic properties
+# The number of [[APICES]].
+property N_APICES : Int;
+
 
 # @category Axioms
 # The __boundary axiom__ states that all types (j, j, ..., j) for j &isin; [d] exist.

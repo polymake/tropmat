@@ -53,6 +53,11 @@ rule N_VERTICES : VERTICES {
 }
 weight 0.10;
 
+rule N_APICES : APICES {
+	$this->N_APICES=@{($this->APICES)};
+}
+weight 0.10;
+
 
 rule DIM : VERTICES | TOPES | TYPES {
 	$this->DIM=dim($this->VERTICES | TOPES | TYPES)-1;	
@@ -75,6 +80,28 @@ rule TOPES : VERTICES {
 	$this->TOPES=topes_from_vertices($this->VERTICES);
 }
 weight 2.00;
+
+rule VERTICES : TOPES, RANK {
+	$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
+}
+precondition : GENERAL_POSITION;
+weight 1.50;
+
+
+rule APICES : VERTICES, RANK {
+	my @r=();
+	my $v=$this->VERTICES;
+	foreach my $vertex (@$v) {
+		foreach (@$vertex) {
+			if (@$_==$this->RANK) {
+				push(@r,$vertex);
+				last;
+			}
+		}
+	}
+	$this->APICES=\@r;
+}
+weight 0.50;
 
 rule GENERAL_POSITION : N_TOPES, DIM, N_PHP {
 	my $x = binomial($this->N_PHP+$this->DIM, $this->DIM);
@@ -147,6 +174,7 @@ rule VERTICES : TYPES {
 	}
 	$this->VERTICES= \@r;
 }
+weight 1.50;
 
 #rule TYPES : VERTICES {
 #	@v=@{$this->VERTICES};
