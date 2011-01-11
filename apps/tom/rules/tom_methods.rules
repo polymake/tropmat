@@ -11,6 +11,21 @@ user_method TYPE_RANK :  RANK, N_PHP {	# for some reason this only works if we h
 }
 
 
+# @category Basic properties
+# The //i//-the [[APICES|apex]], i.e., the (unique) type whose //i//-th coordinate is [d] (for d=[[RANK]]).
+# @param Int i
+# @return Array<Set<Int>>
+user_method APEX : VERTICES, RANK {
+	my ($self, $j) =@_;
+	
+	my $v=$self->VERTICES;
+	foreach my $vertex (@$v) {
+		if (@{$vertex->[$j-1]}==$self->RANK) {
+			return $vertex;
+		}
+	}
+}
+
 
 # @category Producing a new TropicalOrientedMatroid
 # Returns the __deletion__, i.e., the TropicalOrientedMatroid obtained by deleting some position (hyperplane) //pos//.
@@ -239,13 +254,7 @@ user_method ELIMINATION : TYPES, N_PHP {
 	my $s1=new Set<Int>($type1->[$j]);
 	my $s2=new Set<Int>($type2->[$j]);
 	OUTERLOOP: foreach (@{$self->TYPES}) {
-#		print "\n$_";
-#		print "u: $s1+$s2\n";
 		my $set = new Set<Int>($_->[$j]);
-#		print "s: $set\n";
-#		print "eq: ";
-#		print $set==$s1+$s2;
-#		print "\n";
 		unless ($set==$s1+$s2) {
 			next;
 		}

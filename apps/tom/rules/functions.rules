@@ -110,6 +110,10 @@ user_function minkowski_cell {
 user_function tom_flip {
 	my ($t,$h1,$h2,$i,$j)=@_;
 
+	unless(flippable($t,$h1,$h2,$i,$j)) {
+		die "flip not well-defined";
+	}
+
 	my $topes=$t->TOPES;
 	my @ntopes=();
 	
@@ -129,74 +133,31 @@ user_function tom_flip {
 }
 
 
-# @category Producing from given data
-# @param TropicalOrientedMatroid T
-# @param Int h1 index of the first hyperplane involved
-# @param Int h2 index of the second hyperplane involved
-# @param Array<Int> type entries at the second position
-# @return TropicalOrientedMatroid
-user_function tom_flip_old {
- my ($t,$i,$j,$s)=@_;
- my @v=@{$t->VERTICES};
-  
- my @newv=();
- 
- foreach (@v) {
- 	my $curr=apply_flip($_, $s,$i,$j);
-	push(@newv, $curr); 
- }
+sub flippable {
+	my ($tom,$h1,$h2,$i,$j)=@_;
+	
+	my $a1=$tom->APEX($h1);
+	my $a2=$tom->APEX($h2);
 
-	my @r=@newv;
- 
-#	print "r:\n";
-#	foreach (@r) {
-#		foreach (@$_) {
-#			print "{@$_} ";
-#		}
-#		print "\n";
-#	}
-
- 
- my $tom = new TropicalOrientedMatroid(VERTICES=>\@newv);
- return $tom;
+	my $si=new Set; $si+=$i;
+	my $sj=new Set; $sj+=$j;
+	
+	if (($a1->[$h2-1]==$si and $a2->[$h1-1]==$sj) or ($a1->[$h2-1]==$sj and $a2->[$h1-1]==$si)) {
+		return 0;
+	}
+	
+	my $vertices=$tom->VERTICES;
+	
+	foreach my $v (@$vertices) {
+		if (($v->[$h1-1]==$si and $v->[$h2-1]==$sj) or ($v->[$h2-1]==$si and $v->[$h1-1]==$sj)) {
+			print $v;
+			return 0;
+		}
+	}
+	
+	return 1;
 }
 
-sub apply_flip {
-	my ($t,$s,$i,$j)=@_;
-
-	if (contains($t->[$i-1],$s)){
-		if (cont_elt($t->[$j-1],$s->[0])) {
-#			print "1\n";
-			return change_flip_entries($t,$i,$j,$s->[0],$s->[1]);
-		}
-		elsif (cont_elt($t->[$j-1],$s->[1])) {
-#			print "2\n";
-			return change_flip_entries($t,$i,$j,$s->[1],$s->[0]);
-		}
-		else {
-#			print "51\n";
-			return $t;
-		}
-	}
-	elsif (contains($t->[$j-1],$s)){
-		if (cont_elt($t->[$i-1],$s->[0])) {
-#			print "3\n";
-			return change_flip_entries($t,$j,$i,$s->[0],$s->[1]);
-		}
-		elsif (cont_elt($t->[$i-1],$s->[1])) {
-#			print "4\n";
-			return change_flip_entries($t,$j,$i,$s->[1],$s->[0]);
-		}	
-		else {
-#			print "52\n";
-			return $t;
-		}
-	}
-	else {
-#		print "5\n";
-		return $t;
-	}
-}
 
 # return true if elt is contained in set
 sub cont_elt {
@@ -220,29 +181,3 @@ sub contains {
 	return 1;
 }
 
-sub change_flip_entries {
-	my ($t,$i,$j,$s1,$s2)=@_;
-	# entry i contains {s1,s2}
-	# entry j contains s1
-	
-	print "$t\n";
-	
-	my @nextv=@{$t};
-
-
-	my @newi=();
-	foreach (@{$t->[$i-1]}) {
-		unless ($_ == $s2){
-			push(@newi,$_);
-		}
-	}
-	my @ni=sort(@newi);
-	$nextv[$i-1]=\@ni;
-	
-	my @newj=@{$t->[$j-1]};
-	push(@newj,$s2);
-	my @nj=sort(@newj);
-	$nextv[$j-1]=\@nj;
-
-	return \@nextv;
-}

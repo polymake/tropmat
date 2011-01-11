@@ -12,10 +12,10 @@ Array<Array<Set<int> > > vertices_from_topes(const Array<Array<Set<int> > > tope
 	vertexset vertices;
 	
 	for (int i=0; i<int(t.size())-1; ++i) {
-		vertexset newvertices;
-		vertices_in_nh(newvertices,d,i,t);
-		vertices+=newvertices;
+		vertices_in_nh(vertices,d,i,t);
 	}
+	select_good_ones(vertices, t, d);
+
 	Array<Array<Set<int> > > ret(vertices.begin(), vertices.end());
 	return ret;
 }
@@ -43,7 +43,6 @@ void vertices_in_nh(vertexset & vertices, int d, int i, const std::vector<tope> 
 	tope current=all[i];
 	std::vector<tope> nh=neighbourhood(d,i,all);
 	get_vertices_rec(vertices,d,current,0,tope2type(all[i]),nh);
-	select_good_ones(vertices,nh,d);
 }
 
 void vertices_in_nh_nongen(vertexset & vertices, int d, int i, const std::vector<tope> & all) {

@@ -123,8 +123,8 @@ rule SURROUNDING_AXIOM : VERTICES {
 }
 weight 0.10;
 
-rule COMPARABILITY_AXIOM : TOPES | VERTICES, RANK {
-	$this->COMPARABILITY_AXIOM=comparability_axiom($this->VERTICES | TOPES, $this->RANK);
+rule COMPARABILITY_AXIOM : TYPES, RANK {
+	$this->COMPARABILITY_AXIOM=comparability_axiom($this->TYPES, $this->RANK);
 }
 weight 2.00;
 
