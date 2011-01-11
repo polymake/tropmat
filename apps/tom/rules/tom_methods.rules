@@ -15,7 +15,7 @@ user_method TYPE_RANK :  RANK, N_PHP {	# for some reason this only works if we h
 # @category Producing a new TropicalOrientedMatroid
 # Returns the __deletion__, i.e., the TropicalOrientedMatroid obtained by deleting some position (hyperplane) //pos//.
 # [[N_PHP]] is reduced by one.
-# @param int pos
+# @param int pos the position to be deleted
 # @return TropicalOrientedMatroid
 #
 user_method DELETION : VERTICES, RANK, N_PHP {
@@ -52,7 +52,7 @@ user_method DELETION : VERTICES, RANK, N_PHP {
 # @category Producing a new TropicalOrientedMatroid
 # Returns the __contraction__, i.e., the TropicalOrientedMatroid obtained by restricting to all types that do not contain //pos//.
 # [[RANK]] is reduced by one.
-# @param int pos
+# @param int pos the position to be contracted
 # @return TropicalOrientedMatroid
 user_method CONTRACTION : TOPES, RANK, N_PHP {
 	my ($self, $pos) = @_;
@@ -95,7 +95,7 @@ user_method CONTRACTION : TOPES, RANK, N_PHP {
 # &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
 # The result will be a tropical oriented matroid with parameters (n+1,d); i.e., the [[N_PHP|number of pseudohyperplanes]] is increased by 1.
 # It will be non-realisable if and only if the input was. 
-# @param Array<Int> perm permutation of [d]
+# @param Array<Int> perm permutation of [d], default: [1, ..., d]
 # @return TropicalOrientedMatroid
 user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
 	
@@ -146,7 +146,7 @@ user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
 # &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
 # The result will be a tropical oriented matroid with paramters (n,d+1); i.e., the [[RANK|rank]] is increased by 1.
 # It will be non-realisable if and only if the input was.
-# @param Array<Int> perm permutation of [n]
+# @param Array<Int> perm permutation of [n], default: [1, ..., n]
 # @return TropicalOrientedMatroid
 user_method D_PLACING : VERTICES, RANK, DIM, N_PHP {
 	my ($self, $perm) = @_;
@@ -561,6 +561,72 @@ sub type_equals {
 	return 1;
 }
 
+# @category Hidden
+user_method N_JAVASCRIPT {
+	print "Oh, you're very funny. Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_PERL {
+	print "I thought you'd try that.";
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_FORTRAN {
+	print "Rolf? Is this you? Math without FORTRAN? I'm in! Honestly: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_JAVA {
+	print "Hey, you found another programming language. Congratulations!";
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_SHAKESPEARE {
+	print "Fun fact to know: Although Shakespeare is known to have used at least six or seven different spellings of his name, the one you just typed, which is most commonly used nowadays, was not among them.";
+}
+
+# @category Hidden
+user_method N_WHITESPACE {
+	print "Well, this is getting a bit too absurd now, don't you think.";
+}
+
+# @category Hidden
+user_method N_PASCAL {
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_HASKELL {
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+
+# @category Hidden
+user_method N_CPLUSPLUS {
+	print "Well, that was so obvious.";
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_PYTHON {
+	print "In your dreams...";
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_HTML {
+	print "Oh, come on, html isn't even a programming language.";
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
+
+# @category Hidden
+user_method N_CSS {
+	print "Oh, come on, css isn't even a programming language.";
+	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
+}
 
 
 }  # end TropicalOrientedMatroid

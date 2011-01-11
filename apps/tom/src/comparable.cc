@@ -1,22 +1,14 @@
-#include "polymake/client.h"
-#include "polymake/Set.h"
-#include "polymake/Array.h"
-#include <iostream>
-
-//using namespace std;
-using namespace pm;
-
-
-Array<Array<Set<int>, Set<int> > > neighbours(Array<Set<int> >, Array<Set<int> >, int);
+#include "comparable.h"
 
 
 namespace polymake { namespace tom {
 
 
 
-bool comparable(Array<Set<int> > type1, Array<Set<int> > type2, int d) {
+bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
 
-	Array<Array<Set<int>, Set<int> > > nb = neighbours(type1,type2,d);
+	Array<Array<Set<int>, Set<int> > > nb;
+	neighbours(nb, type1,type2,d);
 
 	for (int i=1; i<=d; ++i) {	// check whether there is a cycle starting with i
 
@@ -73,13 +65,8 @@ bool comparable(Array<Set<int> > type1, Array<Set<int> > type2, int d) {
 Function4perl(&comparable, "comparable");
 
 
+void neighbours(Array<Array<Set<int>, Set<int> > > & nb, const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
 
-} }
-
-
-
-Array<Array<Set<int>, Set<int> > > neighbours(Array<Set<int> > type1, Array<Set<int> > type2, int d) {
-	Array<Array<Set<int>, Set<int> > > nb;
 	nb.resize(d);
 	
 	for (int j=0; j<d; ++j) {
@@ -88,8 +75,8 @@ Array<Array<Set<int>, Set<int> > > neighbours(Array<Set<int> > type1, Array<Set<
 		
 	for (int i=0; i<type1.size(); ++i) {	// go thru all sets in type1 and type2
 		
-		for (Set<int>::iterator s=type1[i].begin(); s!=type1[i].end(); ++s) {
-			for (Set<int>::iterator s2 = type2[i].begin(); s2!=type2[i].end(); ++s2) {
+		for (Set<int>::const_iterator s=type1[i].begin(); s!=type1[i].end(); ++s) {
+			for (Set<int>::const_iterator s2 = type2[i].begin(); s2!=type2[i].end(); ++s2) {
 				//cout<<*s<<" "<<*s2<<endl;
 				if (*s!=*s2) {
 					if (type1[i].contains(*s2) && type2[i].contains(*s)) {
@@ -109,7 +96,8 @@ Array<Array<Set<int>, Set<int> > > neighbours(Array<Set<int> > type1, Array<Set<
 //		cout<<nb[k][1]<<endl;
 //		cout<<endl;
 //	}
-
-	return nb;
 }
+
+
+} }
 

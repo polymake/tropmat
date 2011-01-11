@@ -2,7 +2,7 @@
 # @topic application
 # This application deals with __T__ropical __o__riented __m__atroids (toms) as defined by Ardila and Develin. TropicalOrientedMatroids are defined via their [[TYPES]] (or some subsets, such as its [[VERTICES]] or [[TOPES]]).
 # 
-# One can for instance check whether an object defined in this way does actually [[satisfy the axioms|IS_TOM]] of tropical oriented matroids. Moreover, one can perform simple transformation such as [[CONTRACTION]] and [[DELETION]]. For toms of [[dimension|DIM]] at most 3, there are also quite elaborate visualisation methods.
+# One can for instance check whether an object defined in this way does actually [[IS_TOM|satisfy the axioms]] of tropical oriented matroids. Moreover, one can perform simple transformation such as [[CONTRACTION]] and [[DELETION]]. For toms of [[DIM|dimension]] at most 3, there are also quite elaborate visualisation methods.
 # 
 # Contained in extension ''tropmat''.
 
@@ -85,8 +85,12 @@ rule VERTICES : TOPES, RANK {
 	$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
 }
 precondition : GENERAL_POSITION;
-weight 1.50;
+weight 2.00;
 
+#rule VERTICES : TOPES, RANK {
+#	$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);
+#}
+#weight 3.00;
 
 rule APICES : VERTICES, RANK {
 	my @r=();

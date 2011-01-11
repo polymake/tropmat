@@ -12,7 +12,7 @@ property NAME : String;
 property DIM : Int;
 
 # @category Basic properties
-# Rank of the tropical oriented matroid.
+# Rank of the tropical oriented matroid, i.e., the largest entry occuring in the [[TYPES]].
 # RANK=[[DIM]]+1.
 property RANK : Int;
 
