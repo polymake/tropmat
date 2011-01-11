@@ -4,6 +4,20 @@
 namespace polymake { namespace tom {
 
 
+bool comparability_axiom(const Array<Array<Set<int> > > types, int d) {
+	for (Array<Array<Set<int> > >::const_iterator it=types.begin(); it!=types.end();) {
+		Array<Array<Set<int> > >::const_iterator it2=++it;
+		for ( ; it2!=types.end(); ++it2) {
+			if (!comparable(*it,*it2,d)) {
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+Function4perl(&comparability_axiom, "comparability_axiom");
+
 
 bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
 

@@ -123,17 +123,8 @@ rule SURROUNDING_AXIOM : VERTICES {
 }
 weight 0.10;
 
-rule COMPARABILITY_AXIOM : TYPES, RANK {
-	my @v = @{$this->TYPES};
-	for (my $i=0; $i<@v-1; ++$i) {
-		for (my $j=$i+1; $j<@v; ++$j) {
-			unless ($this->COMPARABLE($v[$i],$v[$j])) {
-				print "$v[$i]\n $v[$j]\n";
-				$this->COMPARABILITY_AXIOM= 0;
-			}
-		}
-	}
-	$this->COMPARABILITY_AXIOM= 1;
+rule COMPARABILITY_AXIOM : TOPES | VERTICES, RANK {
+	$this->COMPARABILITY_AXIOM=comparability_axiom($this->VERTICES | TOPES, $this->RANK);
 }
 weight 2.00;
 

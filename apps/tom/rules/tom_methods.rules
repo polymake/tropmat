@@ -364,7 +364,7 @@ weight 2.00;
 # @param Array<Set<Int>> type
 # @param Array<Set<Int>> ord_part an ordered partition of [d]
 # @return Array<Set<Int>>
-#
+# 
 user_method REFINEMENT {
 	my ($self, $type, $ordp) = @_;
 	my @t = @{$type};
@@ -560,6 +560,10 @@ sub type_equals {
 	}
 	return 1;
 }
+
+
+
+
 
 # @category Hidden
 user_method N_JAVASCRIPT {
