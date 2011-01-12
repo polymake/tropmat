@@ -39,5 +39,6 @@ namespace polymake { namespace common {
    OperatorInstance4perl(BinaryAssign_add, perl::Canned< Set< Array< Set< int > > > >, perl::Canned< const Array< Set< int > > >);
    FunctionInstance4perl(new_X, Set< int >, perl::Canned< const pm::Series<int, true> >);
    OperatorInstance4perl(BinaryAssign_add, perl::Canned< Set< Array< Set< int > > > >, perl::Canned< const Set< Array< Set< int > > > >);
+   OperatorInstance4perl(Binary__ne, perl::Canned< const Set< int > >, perl::Canned< const Set< int > >);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }

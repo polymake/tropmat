@@ -75,6 +75,9 @@ void get_vertices_rec(vertexset & vertices, int d, tope & t, int j, const tomtyp
 void select_good_ones(vertexset & vertices, const std::vector<tope> & t, int d) {
 	for (vertexset::iterator it=vertices.begin(); it!=vertices.end(); ++it) {
 		for (std::vector<tope>::const_iterator ts=t.begin(); ts!=t.end(); ++ts) {
+			print(*it);
+			print(*ts);
+			std::cout<<comparable(*it, pmtype(tope2type(*ts)), d)<<std::endl<<std::endl;
 			if (!comparable(*it, pmtype(tope2type(*ts)), d)) {
 				vertices -= *it; --it;
 				break;
