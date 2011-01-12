@@ -16,9 +16,12 @@ bool comparability_axiom(const Array<Array<Set<int> > > types, int d) {
 	return 1;
 }
 
-Function4perl(&comparability_axiom, "comparability_axiom");
+Function4perl(&comparability_axiom, "comparability_axiom()");
 
-
+// bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2) {
+// 	return comparable(type1, type2, 5);
+// }
+// 
 bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
 
 	Array<Array<Set<int>, Set<int> > > nb;
@@ -76,7 +79,7 @@ bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2, 
 }
 
 
-Function4perl(&comparable, "comparable");
+Function4perl(&comparable, "comparable(Array Array $)");
 
 
 void neighbours(Array<Array<Set<int>, Set<int> > > & nb, const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {

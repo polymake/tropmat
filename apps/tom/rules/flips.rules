@@ -1,0 +1,161 @@
+# @category Flips
+# Returns some flip of the TropicalOrientedMatroid //T// (towards the [[uniform]] one). Prints the parameters of [[tom_flip]] used for the flip.
+# @param TropicalOrientedMatroid T
+# @return TropicalOrientedMatroid
+user_function find_flip {
+	my $t=shift;
+	my $n=$t->N_PHP;
+	my $d=$t->RANK;
+	
+	for (my $i=1; $i<$d; ++$i) {
+		for (my $j=$i+1; $j<=$d; ++$j) {
+			for (my $h1=1; $h1<$n; ++$h1) {
+				for (my $h2=$h1+1; $h2<=$n; ++$h2) {
+					if (my $ret=tom_flip($t,$h1,$h2,$i,$j)) {
+						print "$h1 $h2 $i $j\n";
+						return $ret;
+					}
+				}
+			}
+		}
+	}
+	print "no flip available";
+}
+
+# @category Flips
+# Tries to flip the TropicalOrientedMatroid //T// to the [[uniform]] one. Prints the parameters of each flip.
+# @param TropicalOrientedMatroid T
+user_function flip_to_uniform {
+	my $t=shift;
+	while (1) {
+		my $f=find_flip($t);
+		if ($f->IS_UNIFORM) {return;}
+		$t=$f;
+	}
+}
+
+
+# @category Flips
+# @param TropicalOrientedMatroid T
+# @param Int h1 index of the first hyperplane involved
+# @param Int h2 index of the second hyperplane involved
+# @param Int i
+# @param Int j
+# @param Bool verbose default=0
+# @return TropicalOrientedMatroid
+user_function tom_flip {
+	my ($t,$h1,$h2,$i,$j,$v)=@_;
+	unless (defined($v)) {$v=0;}
+
+	unless(flippable($t,$h1,$h2,$i,$j,$v)) {
+		return;
+	}
+
+	my $topes=$t->TOPES;
+	my @ntopes=();
+	
+	foreach my $tope (@$topes) {
+		my @ntope=@$tope;
+		if ($tope->[$h1-1]->[0]==$i && $tope->[$h2-1]->[0]==$j) {
+			$ntope[$h2-1]=[$i];
+			$ntope[$h1-1]=[$j];
+		} elsif ($tope->[$h1-1]->[0]==$j && $tope->[$h2-1]->[0]==$i) {
+		#	$ntope[$h2-1]=[$j];
+		#	$ntope[$h1-1]=[$i];
+			if ($v) {print "nothing to flip";}
+			return;
+		}
+		push(@ntopes,\@ntope);
+
+	}
+	return new TropicalOrientedMatroid(TOPES=>\@ntopes);
+}
+
+
+sub flippable {
+	my ($tom,$h1,$h2,$i,$j,$verb)=@_;
+	
+	my $a1=$tom->APEX($h1);
+	my $a2=$tom->APEX($h2);
+
+	my $si=new Set; $si+=$i;
+	my $sj=new Set; $sj+=$j;
+	
+	if (($a1->[$h2-1]==$si and $a2->[$h1-1]==$sj) or ($a1->[$h2-1]==$sj and $a2->[$h1-1]==$si)) {
+		if ($verb) {print "flip not well-defined: there is a hyperplane inbetween\n";}
+		return 0;
+	}
+
+	if (($a1->[$h2-1]!=$si and $a2->[$h1-1]!=$sj) and ($a1->[$h2-1]!=$sj and $a2->[$h1-1]!=$si)) {
+		if ($verb) {print "flip not well-defined\n";}
+		return 0;
+	}
+
+	
+	my $vertices=$tom->VERTICES;
+	
+	foreach my $v (@$vertices) {
+		if (($v->[$h1-1]==$si and $v->[$h2-1]==$sj) or ($v->[$h2-1]==$si and $v->[$h1-1]==$sj)) {
+			if ($verb) {print "flip not well-defined: there is a tope containing both apices\n";}
+			return 0;
+		}
+	}
+	
+	my $topes=$tom->TOPES;
+	foreach (@$topes) {
+	
+	}
+	
+	
+	my $s= new Set($i,$j);
+	foreach my $v (@$vertices) {
+		if ($v->[$h1-1]==$s) {
+			if (neighs($v,$a2,$tom->RANK)) {
+				printtype($v); print "\n$a2\n"; 
+				return 1;
+			}
+		} elsif ($v->[$h2-1]==$s) {
+			if (neighs($v,$a1,$tom->RANK)) {
+				printtype($v); print "\n$a1\n"; 
+				return 1;
+			}
+		}
+	}
+	
+	if ($verb){print "flip not well-defined: apex too far from hyperplane\n";}
+	return 0;
+}
+
+sub printtype {
+	my $t=shift;
+	foreach (@$t) {print "{@$_} "};
+}
+
+# @category Type manipulation
+# Returns the intersection of //type1// and //type2// if this is a type.
+# @param Array<Set<Int>> type1
+# @param Array<Set<Int>> type1
+# @return Array<Set<Int>> of 0 if not a type
+user_function type_intersection {
+	my ($t1, $t2)=@_;
+	my @intersection=();
+	
+	for (my $i=0; $i<@$t1; ++$i) {
+		my $is=$t1->[$i]*$t2->[$i];
+		if (@$is==0) {return 0;}
+		push(@intersection,$is);
+	}
+	return \@intersection;
+}
+
+
+sub neighs {
+	my ($t1,$t2,$d)=@_;
+	my $i=type_intersection($t1,$t2);
+	if ($i) {
+		if (rank($i,$d)==2) {
+			return 1;
+		}
+	}
+	return 0;
+}

@@ -1,5 +1,5 @@
 # @category Producing from scratch
-# Produces the uniform tropical oriented matroid with parameters //n// and //d//.
+# Produces the uniform tropical oriented matroid with parameters //n// and //d//. I.e., the (unique) tropical oriented matroid in [[GENERAL_POSITION]] all of whose [[TOPES]] are decreasing. (Note that I could also have chosen increasing but decreasing was faster to implement.)
 # @param Int n
 # @param Int d
 # @return TropicalOrientedMatroid
@@ -42,7 +42,68 @@ user_function tom_from_tropical_polytope {
 	return new TropicalOrientedMatroid(VERTICES=>\@tvs);
 }
 
-# @category Producing a polytope
+
+# @category Type manipulation
+# The __dual__ of the (//n//,//d//)-type //t// is a (//d//,//n//)-type.
+# @param Array<Set<Int>> t an (n,d)-type
+# @param Int n
+# @param Int d
+# @return Array<Set<Int>>
+user_function dual_type {
+	my ($t,$n,$d)=@_;
+	
+	my @r=();
+	
+	for (my $i=0; $i<@$t; ++$i) {
+		foreach (@{$t->[$i]}) {
+			push(@{$r[$_-1]},$i+1);
+		}
+	}
+	return \@r;
+}
+
+# @category Basic properties
+# Returns a list of all [[VERTICES]] of //t// that contain the given pretype //p//.
+# @param TropicalOrientedMatroid t
+# @param Array<Set<Int>> p pretype; note that there may be empty positions
+# @return Array<Array<Set<Int>>>
+user_function filter {
+	my ($t,$p)=@_;
+	my @r=();
+	my $v=$t->VERTICES;
+	LOOP: foreach my $c (@$v) {
+		for (my $i=0; $i<@$c; ++$i) {
+			if (!contains($c->[$i],$p->[$i])) {
+				next LOOP;
+			}
+		}
+		push(@r,$c);
+	}
+	return \@r;
+}
+
+# @category Basic properties
+# Returns a list of all [[VERTICES]] of //t// that contain the given coarse pretype //p//.
+# @param TropicalOrientedMatroid t
+# @param Array<Int> p coarse pretype
+# @return Array<Array<Set<Int>>>
+user_function coarse_filter {
+	my ($t,$p)=@_;
+	my @r=();
+	my $v=$t->VERTICES;
+	LOOP: foreach my $c (@$v) {
+		for (my $i=0; $i<@$c; ++$i) {
+			if (@{$c->[$i]}<$p->[$i]) {
+				next LOOP;
+			}
+		}
+		push(@r,$c);
+	}
+	return \@r;
+}
+
+
+# @category Mixed subdivisions
 # Returns the face of a standard //d//-simplex spanned by the vertices in //vertices//.
 # @param Int d the dimension of the simplex
 # @param Set<Int> vertices the labels of the vertices (starting from 0)
@@ -75,7 +136,7 @@ user_function simplex_face {
 }
 
 
-# @category Producing a polytope
+# @category Mixed subdivisions
 # Computes the Minkowski sum of the given simplex faces.
 # Each face is given as a list of its vertices, where the vertices are labeled
 # starting from 0.
@@ -98,65 +159,6 @@ user_function minkowski_cell {
 	}	
 	return $m;	
 } 
-
-
-# @category Producing from given data
-# @param TropicalOrientedMatroid T
-# @param Int h1 index of the first hyperplane involved
-# @param Int h2 index of the second hyperplane involved
-# @param Int i
-# @param Int j
-# @return TropicalOrientedMatroid
-user_function tom_flip {
-	my ($t,$h1,$h2,$i,$j)=@_;
-
-	unless(flippable($t,$h1,$h2,$i,$j)) {
-		die "flip not well-defined";
-	}
-
-	my $topes=$t->TOPES;
-	my @ntopes=();
-	
-	foreach my $tope (@$topes) {
-		my @ntope=@$tope;
-		if ($tope->[$h1-1]->[0]==$i && $tope->[$h2-1]->[0]==$j) {
-			$ntope[$h2-1]=[$i];
-			$ntope[$h1-1]=[$j];
-		} elsif ($tope->[$h1-1]->[0]==$j && $tope->[$h2-1]->[0]==$i) {
-			$ntope[$h2-1]=[$j];
-			$ntope[$h1-1]=[$i];
-		}
-		push(@ntopes,\@ntope);
-
-	}
-	return new TropicalOrientedMatroid(TOPES=>\@ntopes);
-}
-
-
-sub flippable {
-	my ($tom,$h1,$h2,$i,$j)=@_;
-	
-	my $a1=$tom->APEX($h1);
-	my $a2=$tom->APEX($h2);
-
-	my $si=new Set; $si+=$i;
-	my $sj=new Set; $sj+=$j;
-	
-	if (($a1->[$h2-1]==$si and $a2->[$h1-1]==$sj) or ($a1->[$h2-1]==$sj and $a2->[$h1-1]==$si)) {
-		return 0;
-	}
-	
-	my $vertices=$tom->VERTICES;
-	
-	foreach my $v (@$vertices) {
-		if (($v->[$h1-1]==$si and $v->[$h2-1]==$sj) or ($v->[$h2-1]==$si and $v->[$h1-1]==$sj)) {
-			print $v;
-			return 0;
-		}
-	}
-	
-	return 1;
-}
 
 
 # return true if elt is contained in set

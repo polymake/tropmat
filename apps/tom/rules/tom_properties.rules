@@ -87,8 +87,12 @@ property ELIMINATION_AXIOM : Bool;
 property IS_TOM : Bool;
 
 
+# @category Basic properties
+# Returns true if the tropical oriented matroid is the [[uniform]] one.
+property IS_UNIFORM : Bool;
+
 # @category Producing a new TropicalOrientedMatroid
-# The __dual__.
+# The __dual__ of tropical oriented matroid with parameters ([[N_PHP|n]],[[RANK|d]]) is the tropical oriented matroid with parameters (d,n) obtained by replacing every vertex by its [[dual_type]].
 property DUAL : TropicalOrientedMatroid;
 
 

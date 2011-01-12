@@ -1,7 +1,7 @@
 object TropicalOrientedMatroid {
 
 # @category Basic properties
-# The __rank__ of a given type //type// is the number of connected components of the type's graph.
+# The __rank__ of a given type //type// is the number of connected components of the [[TYPE_GRAPH|type's graph]].
 # @param Array<Set<Int>> type
 # @return Int
 user_method TYPE_RANK :  RANK, N_PHP {	# for some reason this only works if we have N_PHP here (although we certainly don't need it)

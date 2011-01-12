@@ -10,7 +10,7 @@ IMPORT common graph polytope
 
 file_suffix tom
 
-# A tropical oriented matroid.
+# A tropical oriented matroid. (Can be defined by specifying its [[VERTICES]] or [[TOPES]].)
 declare object TropicalOrientedMatroid;
 
 
@@ -19,6 +19,7 @@ INCLUDE
   functions.rules
   tom_properties.rules
   tom_methods.rules
+  flips.rules
   visual.rules
   visual_dual.rules
   examples.rules
@@ -76,18 +77,32 @@ rule RANK : DIM {
 	$this->RANK = $this->DIM+1;
 }
 
+rule IS_UNIFORM : TOPES, RANK {
+	my $t=$this->TOPES;
+	foreach my $tope (@$t) {
+	my $last=$this->RANK;
+		foreach (@$tope) {
+			if ($_->[0]>$last) {
+				$this->IS_UNIFORM= 0; return;
+			}
+			$last=$_->[0];
+		}
+	}
+	$this->IS_UNIFORM= 1;
+}
+
 rule TOPES : VERTICES {
 	$this->TOPES=topes_from_vertices($this->VERTICES);
 }
 weight 2.00;
 
-rule VERTICES : TOPES, RANK {
+rule VERTICES : TOPES, RANK, GENERAL_POSITION {
 	$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
 }
 precondition : GENERAL_POSITION;
 weight 2.00;
 
-#rule VERTICES : TOPES, RANK {
+#rule VERTICES : TOPES, RANK, GENERAL_POSITION {
 #	$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);
 #}
 #weight 3.00;
@@ -180,12 +195,17 @@ weight 1.50;
 
 
 
-#rule DUAL : VERTICES, DIM, N_PHP {
-# 
-#	@v = @{$this->VERTICES};
-#	
-#}
-
+rule DUAL : VERTICES, RANK, N_PHP {
+ 
+	my @v = @{$this->VERTICES};
+	my @r = ();
+	foreach (@v) {
+		push(@r,dual_type($_,$this->N_PHP, $this->RANK));
+	}
+	my $t= new TropicalOrientedMatroid(VERTICES=>\@r);
+	$this->DUAL=$t;
+}
+weight 1.0;
 
 
 }

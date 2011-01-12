@@ -206,7 +206,8 @@ user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
     }
 
 	my @cells_visual = ( );
-	
+	my $count=0;
+	my $h=@h;
 	foreach (@h) {
 		my $vertices = $self->PSEUDOHYPERPLANE($_);
  	
@@ -223,7 +224,8 @@ user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
 				my $s = minkowski_cell($_, 4);
 				#print "Dim: $s->DIM\n";
     			my $mink = ortho_project($s);		
-	    	 	push (@cells_visual, (my $pv = $mink->VISUAL(  )));
+	    	 	push (@cells_visual, (my $pv = $mink->VISUAL( 
+	    	 	FacetColor=>get_color($count,$h), VertexStyle=>'hidden' )));
 			}
 		}
 		$count++;
