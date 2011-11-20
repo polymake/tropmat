@@ -27,16 +27,17 @@ INCLUDE
 object TropicalOrientedMatroid {
 
 
-rule N_PHP : TOPES {
-   $this->N_PHP=@{${$this->TOPES}[0]};
+rule N_PHP : TOPES | VERTICES | TYPES {
+   $this->N_PHP=@{${$this->TOPES | VERTICES | TYPES}[0]};
 }
 weight 0.10;
 
-rule N_PHP : VERTICES {
-   $this->N_PHP=@{${$this->VERTICES}[0]};
+rule PARAMS : N_PHP, RANK {
+	my @p=();
+	push (@p, $this->N_PHP, $this->RANK);
+	$this->PARAMS=\@p;
 }
 weight 0.10;
-
 
 rule N_TOPES : TOPES {
 	$this->N_TOPES=@{($this->TOPES)};
@@ -97,9 +98,13 @@ rule TOPES : VERTICES {
 weight 2.00;
 
 rule VERTICES : TOPES, RANK, GENERAL_POSITION {
-	$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
+	if ($this->GENERAL_POSITION) {
+		$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
+	} else {
+		$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);	
+	}
 }
-precondition : GENERAL_POSITION;
+#precondition : GENERAL_POSITION;
 weight 2.00;
 
 #rule VERTICES : TOPES, RANK, GENERAL_POSITION {
@@ -128,8 +133,8 @@ rule GENERAL_POSITION : N_TOPES, DIM, N_PHP {
 }
 weight 0.20;
 
-rule BOUNDARY_AXIOM : VERTICES | TOPES, N_PHP, RANK {
-	$this->BOUNDARY_AXIOM = boundary_axiom($this->VERTICES | TOPES, $this->N_PHP, $this->RANK);
+rule BOUNDARY_AXIOM : TOPES | VERTICES , N_PHP, RANK {
+	$this->BOUNDARY_AXIOM = boundary_axiom($this->TOPES | VERTICES, $this->N_PHP, $this->RANK);
 }
 weight 0.30;
 

@@ -18,6 +18,8 @@ void print(const std::vector<tomtype> &);
 void print(const Set<tomtype> &);
 void print(const Array<Set<int> > &); 
 
+void print(const vertexset &);
+
 
 tope type2tope(const Array<Set<int> >&);
 std::vector<tope> types2topes(const Array<Array<Set<int> > > &);

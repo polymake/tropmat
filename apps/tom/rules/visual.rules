@@ -1,8 +1,11 @@
-
+# @topic objects/Visual::TropicalOrientedMatroid
+# @category Visualization
+# Visualisation of tropical oriented matroids
+# @relates TropicalOrientedMatroid
 package Visual::TropicalOrientedMatroid;
 use Polymake::Struct (
    [ '@ISA' => 'Container' ],
-   '$TropicalOrientedMatroid',
+   [ '$TropicalOrientedMatroid' => '#%', default => 'undef' ]
 );
 
 
@@ -159,7 +162,8 @@ user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES,
  	
    	if ($d <= 2) {
 		foreach (@{$vertices}) {
-    		my $mink = ortho_project_2d(minkowski_cell($_, 3));		
+    		my $mink = ortho_project_2d(minkowski_cell($_, 3));	
+    		$mink->name=toString($_);
 	     	push (@cells_visual, (my $pv = $mink->VISUAL( VertexStyle=>'hidden', $decor )));
 		}
 	}
@@ -167,6 +171,7 @@ user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES,
 		foreach (@{$vertices}) {
 			my $s = minkowski_cell($_, 4);
     		my $mink = ortho_project($s);		
+    		$mink->name=toString($_);
 	     	push (@cells_visual, (my $pv = $mink->VISUAL( VertexStyle=>'hidden', $decor )));
 		}
 	}
@@ -176,6 +181,19 @@ user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES,
 					@cells_visual));
 }
 precondition : DIM { $this->DIM<=3 }
+
+# convert a type to a string
+sub toString {
+	my $v=shift;
+	my $r="( ";
+	
+	foreach (@$v) {
+		$r=$r.$_." ";
+	}
+	$r=$r.")";
+	
+	return $r;
+}
 
 
 # @category Visualization

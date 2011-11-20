@@ -17,6 +17,10 @@ property DIM : Int;
 property RANK : Int;
 
 # @category Basic properties
+# The parameters ([[n|N_PHP]], [[d|RANK]]) of the tropical oriented matroid.
+property PARAMS : Array<Int>;
+
+# @category Basic properties
 # Number of pseudohyperplanes.
 property N_PHP : Int; 
 

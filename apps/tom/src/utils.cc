@@ -4,6 +4,14 @@ using namespace std;
 namespace polymake { namespace tom {
 
 
+void print(const vertexset & v) {
+	for(vertexset::const_iterator it=v.begin(); it!=v.end(); ++it) {
+		print(*it);
+	}
+}
+
+
+
 void print(const tope & t) {
 	cout<<"( ";
 	for (tope::const_iterator it=t.begin(); it!=t.end(); ++it) {

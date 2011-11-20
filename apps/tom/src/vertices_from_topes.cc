@@ -27,10 +27,11 @@ Array<Array<Set<int> > > vertices_from_topes_nongen(const Array<Array<Set<int> >
 	std::vector<tope> t = types2topes(topes);
 	vertexset vertices;
 	
-	
 	for (int i=0; i<int(t.size())-1; ++i) {
 		vertices_in_nh_nongen(vertices,d,i,t);
 	}
+	select_good_ones(vertices,t,d);
+	
 	Array<Array<Set<int> > > ret(vertices.begin(), vertices.end());
 	return ret;
 }
@@ -38,7 +39,7 @@ Array<Array<Set<int> > > vertices_from_topes_nongen(const Array<Array<Set<int> >
 Function4perl(&vertices_from_topes_nongen, "vertices_from_topes_nongen");
 
 
-
+// find vertices in neighbourhood (i.e., containing) of i-th tope
 void vertices_in_nh(vertexset & vertices, int d, int i, const std::vector<tope> & all) {
 	tope current=all[i];
 	std::vector<tope> nh=neighbourhood(d,i,all);
@@ -47,11 +48,35 @@ void vertices_in_nh(vertexset & vertices, int d, int i, const std::vector<tope> 
 
 void vertices_in_nh_nongen(vertexset & vertices, int d, int i, const std::vector<tope> & all) {
 	tope current=all[i];
-	get_vertices_rec(vertices,d,current,i+1,tope2type(all[i]),all);	
+	get_vertices_rec_nongen(vertices,d,current,i+1,tope2type(all[i]),all);	
 }
 
 
 void get_vertices_rec(vertexset & vertices, int d, tope & t, int j, const tomtype curr, const std::vector<tope> & all) {
+// 	std::cout<<std::endl<<"step down"<<std::endl<<"j: "<<j<<std::endl;
+// 	std::cout<<"current: "; print(curr);
+// 	std::cout<<"vertices: "; print(vertices);
+
+	// go thru all topes in the neighbourhood of current type
+	for (int k=j; k<int(all.size()); ++k) {
+// 		std::cout<<"  k: "<<k<<std::endl;
+		// form the union with the next tope
+		tomtype newtype=union_of_types(curr,all[k]);
+// 		cout<<"newtype: "; print(newtype);
+		Array<Set<int> > a(newtype.begin(),newtype.end());
+// 		std::cout<<"rank: "<<rank(a,d)<<"  edges: "<<nedges(newtype)<<std::endl;
+		if (acyclic(newtype,d)) {	// if the type graph contains a cycle this can't be a type
+			if (nedges(newtype)==int(curr.size())+d-1) {	// if type if full-dim, add to list
+				vertices += pmtype(newtype);
+			} else {
+				get_vertices_rec(vertices,d,t,k+1,newtype,all);	// else try to increase dim by rec
+			}
+		}
+	}
+}
+
+// recursively compute list of potential vertices
+void get_vertices_rec_nongen(vertexset & vertices, int d, tope & t, int j, const tomtype curr, const std::vector<tope> & all) {
 // 	std::cout<<std::endl<<"step down"<<std::endl<<"j: "<<j<<std::endl;
 // 	std::cout<<"current: "; print(curr);
 // 	std::cout<<"vertices: "; print(vertices);
@@ -62,30 +87,32 @@ void get_vertices_rec(vertexset & vertices, int d, tope & t, int j, const tomtyp
 // 		cout<<"newtype: "; print(newtype);
 		Array<Set<int> > a(newtype.begin(),newtype.end());
 // 		std::cout<<"rank: "<<rank(a,d)<<"  edges: "<<nedges(newtype)<<std::endl;
-		if (acyclic(newtype,d)) {
-			if (nedges(newtype)==int(curr.size())+d-1) {
-				vertices += pmtype(newtype);
-			} else {
-				get_vertices_rec(vertices,d,t,k+1,newtype,all);	
-			}
+
+		Array<Set<int> > newtypepm(newtype.begin(),newtype.end());
+		if (rank(newtypepm,d)==1) {
+			vertices += pmtype(newtype);
+			get_vertices_rec(vertices,d,t,k+1,newtype,all);	
+		} else {
+			get_vertices_rec(vertices,d,t,k+1,newtype,all);	
 		}
 	}
 }
 
+// now select the vertices that are comparable with each tope
 void select_good_ones(vertexset & vertices, const std::vector<tope> & t, int d) {
+	// go thru potential vertices
 	for (vertexset::iterator it=vertices.begin(); it!=vertices.end(); ++it) {
+		// go thru topes
 		for (std::vector<tope>::const_iterator ts=t.begin(); ts!=t.end(); ++ts) {
-			print(*it);
-			print(*ts);
-			std::cout<<comparable(*it, pmtype(tope2type(*ts)), d)<<std::endl<<std::endl;
 			if (!comparable(*it, pmtype(tope2type(*ts)), d)) {
-				vertices -= *it; --it;
+				vertices -= *it--;
 				break;
 			}
 		}
 	}
 }
 
+// find all topes at distance <= d-1 from i-th tope
 std::vector<tope> neighbourhood(int d, int i, const std::vector<tope> & all) {
 	std::vector<tope> nh;
 	for (int j=i+1; j<int(all.size()); ++j) {
@@ -130,6 +157,8 @@ bool acyclic(const tomtype & u, int d) {
 	if (r==int(u.size())+d-edges) {return 1;} else {return 0;}
 }
 
+
+// number of edges in the type graph --> dimension of type
 int nedges(const tomtype & t) {
 	int edges=0;
 	for (tomtype::const_iterator it=t.begin(); it!=t.end(); ++it) {
@@ -138,6 +167,7 @@ int nedges(const tomtype & t) {
 	return edges;
 }
 
+// the distance is the number of positions where the topes differ
 int dist(const tope & a, const tope & b) {
 	int n=a.size();
 	int count=0;

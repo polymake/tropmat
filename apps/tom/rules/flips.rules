@@ -11,10 +11,8 @@ user_function find_flip {
 		for (my $j=$i+1; $j<=$d; ++$j) {
 			for (my $h1=1; $h1<$n; ++$h1) {
 				for (my $h2=$h1+1; $h2<=$n; ++$h2) {
-					print "$h1 $h2 $i $j\n";
-					if (my $ret=tom_flip($t,$h1,$h2,$i,$j,1)) {
-#						print "$h1 $h2 $i $j\n";
-						print "works\n";
+					if (my $ret=tom_flip($t,$h1,$h2,$j,$i,0)) {
+						print "$h1 $h2 $i $j\n";
 						return $ret;
 					}
 				}
@@ -77,6 +75,7 @@ sub flippable {
 
 	my $si=new Set; $si+=$i;
 	my $sj=new Set; $sj+=$j;
+	my $sij=new Set; $sij+=$i; $sij+=$j;
 	
 	# it may not be that apex1 is in sector i of h2 and apex2 is in sector j of h1 since then there is a tope containing both apices and we don't know what to do
 	if ($a1->[$h2-1]==$sj and $a2->[$h1-1]==$si) {
@@ -91,15 +90,21 @@ sub flippable {
 	}
 
 	my @p=(); push(@{$p[$h1-1]},$i); push(@{$p[$h2-1]},$j);
-	my $v=filter($tom,\@p);
+	my $v=filter($tom,\@p);	# all topes the will be touched by the flip (i.e., those that are in sector i of h1 and sector j of h2)
+	
+
 	foreach my $x (@$v) {
-		unless (contains($x->[$h1-1],$sj) or contains($x->[$h2-1],$si)) {
-			if ($verb) {print "flip not well-defined: there is a hyperplane whose $i$j-face is sandwiched between those of $h1 and $h2\n";}
-			return 0;
+		for(my $k=0; $k<@$x; ++$k) {
+			if ($k==$h1-1 or $k==$h2-1) {next;}
+			if (contains($x->[$k],$sij)){
+				if ($verb) {print "flip not well-defined: there is a hyperplane whose $i$j-face is sandwiched between those of $h1 and $h2\n";
+				print $x;}
+				return 0;
+			}
 		}
 	}
 	
-#	my $vertices=$tom->VERTICES;
+	my $vertices=$tom->VERTICES;
 	
 #	foreach my $v (@$vertices) {
 		# it remains to make sure that there is no third hyperplane whose ij-face is sandwiched between those of h1 and h2
@@ -116,23 +121,24 @@ sub flippable {
 #	}
 		
 	
-#	my $s= new Set($i,$j);
-#	foreach my $v (@$vertices) {
-#		if ($v->[$h1-1]==$s) {
-#			if (neighs($v,$a2,$tom->RANK)) {
-#				printtype($v); print "\n$a2\n"; 
-#				return 1;
-#			}
-#		} elsif ($v->[$h2-1]==$s) {
-#			if (neighs($v,$a1,$tom->RANK)) {
-#				printtype($v); print "\n$a1\n"; 
-#				return 1;
-#			}
-#		}
-#	}
+	# finally we have to ensure that one apex is close enough to (i.e., a neighbour of some vertex of) the ij-face of the other hyperplane
+	my $s= $sij;
+	foreach my $v (@$vertices) {
+		if ($v->[$h1-1]==$s) {
+			if (neighs($v,$a2,$tom->RANK)) {
+				#printtype($v); print "\n$a2\n"; 
+				return 1;
+			}
+		} elsif ($v->[$h2-1]==$s) {
+			if (neighs($v,$a1,$tom->RANK)) {
+				#printtype($v); print "\n$a1\n"; 
+				return 1;
+			}
+		}
+	}
 	
-#	if ($verb){print "flip not well-defined: apex too far from hyperplane\n";}
-	return 1;
+	if ($verb){print "flip not well-defined: apex too far from hyperplane\n";}
+	return 0;
 }
 
 sub printtype {
@@ -158,6 +164,7 @@ user_function type_intersection {
 }
 
 
+# checks whether two given types are neighbours
 sub neighs {
 	my ($t1,$t2,$d)=@_;
 	my $i=type_intersection($t1,$t2);
@@ -167,4 +174,29 @@ sub neighs {
 		}
 	}
 	return 0;
+}
+
+object TropicalOrientedMatroid {
+
+# @category Flips
+# 
+# Prints all possible flips for this tom.
+user_method FLIPS {
+	my $t=shift;
+	my $n=$t->N_PHP;
+	my $d=$t->RANK;
+	
+	for (my $i=1; $i<$d; ++$i) {
+		for (my $j=$i+1; $j<=$d; ++$j) {
+			for (my $h1=1; $h1<$n; ++$h1) {
+				for (my $h2=$h1+1; $h2<=$n; ++$h2) {
+					if (my $ret=tom_flip($t,$h1,$h2,$j,$i,0)) {
+						print "$h1 $h2 $i $j\n";
+					}
+				}
+			}
+		}
+	}	
+}
+
 }

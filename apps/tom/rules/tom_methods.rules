@@ -1,5 +1,20 @@
 object TropicalOrientedMatroid {
 
+# @category Output
+# pretty printing of types
+
+user_method print_types :  N_PHP, TYPES {	# for some reason this only works if we have N_PHP here (although we certainly don't need it)	
+	my $self=shift;
+	my $t=$self->TYPES;
+	foreach my $cur (@$t) {
+		foreach my $s (@$cur) {
+			print "$s ";
+		}
+		print "\n";
+	}
+}
+
+
 # @category Basic properties
 # The __rank__ of a given type //type// is the number of connected components of the [[TYPE_GRAPH|type's graph]].
 # @param Array<Set<Int>> type
@@ -9,7 +24,6 @@ user_method TYPE_RANK :  RANK, N_PHP {	# for some reason this only works if we h
 	my ($self, $j) = @_;
 	return rank($j, $self->RANK);
 }
-
 
 # @category Basic properties
 # The //i//-the [[APICES|apex]], i.e., the (unique) type whose //i//-th coordinate is [d] (for d=[[RANK]]).
@@ -106,6 +120,114 @@ user_method CONTRACTION : TOPES, RANK, N_PHP {
 
 
 # @category Producing a new TropicalOrientedMatroid
+# Produces a new TropicalOrientedMatroid by __blowing up__ the //i//-th pseudohyperplane with respect to the permutation //perm//.
+# @param Int i index pseudohyperplane to be blown up
+# @param Array<Int> perm permutation of [d]
+# @return TropicalOrientedMatroid
+user_method BLOW_UP : VERTICES, TOPES, RANK, DIM, N_PHP {
+	my ($self, $j, $perm) = @_;
+	my $d = $self->RANK;
+
+	my @p;
+	if (defined($perm)) {
+		@p = @$perm;
+		if (@p != $d) {
+			die "argument is not a permutation of [$d].";
+		}
+	} else {
+		@p=();
+		for (my $i=1; $i<=$d; ++$i) {
+			push(@p,$i);
+		}
+	}
+	my @invp=();
+	my @partp=();
+	for (my $i=1; $i<=$d; ++$i) {
+		my @l=(); push @l, $p[$d-$i];
+		push(@invp,\@l);
+		my @l=(); push @l, $p[$i-1];
+		push(@partp,\@l);
+	}
+		
+	my @v = @{$self->VERTICES};
+	my @t = @{$self->TOPES};
+
+	my @r = ();		# will contain new vertices
+
+	my @topes = ();
+	
+	foreach my $t (@t) {
+		my @nt=@$t;
+		push @nt, $t->[$j-1];
+		push @topes, \@nt;
+	}
+	my $otopes=new Set<Array<Set<Int>>>(@topes);
+	print $otopes->size."\n";
+
+	foreach my $v (@v) {
+		if (@{$v->[$j-1]}>=2) {
+			my @nv=@$v;
+			push @nv, refine_one_entry($v->[$j-1],\@invp);
+			push @r, \@nv;
+		} else {
+			my @nv=@$v;
+			push @nv, $v->[$j-1];
+			push @r, \@nv;
+		}
+	}
+	
+
+#	foreach my $v (@v) {
+#		if (@{$v->[$j-1]}==1) {
+#			# vertices not in j-th hp
+#			my @nv=@$v;
+#			push @nv, $v->[$j-1];
+#			push @r, \@nv;
+#		} else {
+#			# vertices in j-th hp
+#			my @nv=@$v;
+#			push @nv, refine_one_entry($v->[$j-1],\@invp);
+#			push @r, \@nv;
+			
+			# vertices in new hp
+#			my @nv=refine_whole_type($v,\@partp);
+#			push @nv, $v->[$j-1];
+#			push @r, \@nv;
+#		}
+#	}
+
+	
+	my $t=new TropicalOrientedMatroid(VERTICES=>\@r);
+
+	#return $t;
+
+	my $ntopes=new Set<Array<Set<Int>>>($t->TOPES);
+
+	$ntopes+=$otopes;
+	
+
+#	my $n=$self->N_PHP+1;
+	
+#	my @tmp=();
+#	for (my $i=1; $i<=$d; ++$i) {
+#		my @y=();
+#		my @x=();
+#		push @x,$i;
+#		for (my $k=1; $k<=$n; ++$k) {
+#			push @y,\@x;
+#		}
+#		push @tmp,\@y;
+#	}
+#	my $bnd=new Set<Array<Set<Int>>>(@tmp);
+#	$topes+=$bnd;
+#	print $topes;
+	
+	return new TropicalOrientedMatroid(TOPES=>$otopes);
+
+}
+
+
+# @category Producing a new TropicalOrientedMatroid
 # Produces a new TropicalOrientedMatroid by __placing__ vertices in
 # &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
 # The result will be a tropical oriented matroid with parameters (n+1,d); i.e., the [[N_PHP|number of pseudohyperplanes]] is increased by 1.
@@ -121,7 +243,7 @@ user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
 	if (defined($perm)) {
 		@p = @$perm;
 		if (@p != $d) {
-			die "argument is not a permutation of [$n].";
+			die "argument is not a permutation of [$d].";
 		}
 	} else {
 		@p=();
@@ -396,7 +518,29 @@ user_method REFINEMENT {
 	return new Array<Set<Int>>(@r);
 }
 
-
+sub refine_one_entry {
+	my ($entry, $ordp) = @_;	# entry is a Set<Int>, ordp is an ordered partition
+	my $a=new Set<Int>($entry);
+	
+	foreach (@$ordp) {
+		my $b=new Set<Int>($_);
+		my @i= @{$a*$b};
+		if (@i) {
+			return new Set<Int>(@i);
+		}
+	}	
+	return $a;
+}
+sub refine_whole_type {
+	my ($type, $ordp) =@_;
+	my @r=();
+	
+	foreach (@$type) {
+		push @r, refine_one_entry($_, $ordp);
+	}
+	return @r;
+	#return new Array<Set<Int>>(@r);
+}
 
 # @category Basic properties
 # Returns the type graph of a given type.
@@ -570,76 +714,6 @@ sub type_equals {
 	return 1;
 }
 
-
-
-
-
-# @category Hidden
-user_method N_JAVASCRIPT {
-	print "Oh, you're very funny. Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_PERL {
-	print "I thought you'd try that.";
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_FORTRAN {
-	print "Rolf? Is this you? Math without FORTRAN? I'm in! Honestly: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_JAVA {
-	print "Hey, you found another programming language. Congratulations!";
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_SHAKESPEARE {
-	print "Fun fact to know: Although Shakespeare is known to have used at least six or seven different spellings of his name, the one you just typed, which is most commonly used nowadays, was not among them.";
-}
-
-# @category Hidden
-user_method N_WHITESPACE {
-	print "Well, this is getting a bit too absurd now, don't you think.";
-}
-
-# @category Hidden
-user_method N_PASCAL {
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_HASKELL {
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-
-# @category Hidden
-user_method N_CPLUSPLUS {
-	print "Well, that was so obvious.";
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_PYTHON {
-	print "In your dreams...";
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_HTML {
-	print "Oh, come on, html isn't even a programming language.";
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
-
-# @category Hidden
-user_method N_CSS {
-	print "Oh, come on, css isn't even a programming language.";
-	print "Btw: php in N_PHP stands for PseudoHyperPlane.";
-}
 
 
 }  # end TropicalOrientedMatroid

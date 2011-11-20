@@ -15,11 +15,12 @@
    $Project: polymake $$Id: bindings.cc 9716 2010-06-28 22:22:03Z gawrilow $
 */
 
-///==== this line controls the automatic file splitting: max.instances=40
-
-#include "polymake/client.h"
-#include "polymake/Integer.h"
-namespace polymake { namespace common {
+namespace polymake { namespace tom {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
+   FunctionWrapper4perl( void () ) {
+      IndirectWrapperReturnVoid(  );
+   }
+   FunctionWrapperInstance4perl( void () );
+
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }

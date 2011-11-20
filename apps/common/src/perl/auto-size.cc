@@ -12,14 +12,22 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 --------------------------------------------------------------------------------
-   $Project: polymake $$Id: bindings.cc 9716 2010-06-28 22:22:03Z gawrilow $
+   $Project: polymake $$Id$
 */
 
 ///==== this line controls the automatic file splitting: max.instances=40
 
 #include "polymake/client.h"
-#include "polymake/Integer.h"
+#include "polymake/Set.h"
+#include "polymake/Array.h"
 namespace polymake { namespace common {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
+   template <typename T0>
+   FunctionInterface4perl( size_f1, T0 ) {
+      perl::Value arg0(stack[0]);
+      WrapperReturn( arg0.get<T0>().size() );
+   };
+
+   FunctionInstance4perl(size_f1, perl::Canned< const Set< Array< Set< int > > > >);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }

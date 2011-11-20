@@ -1,6 +1,7 @@
 #include "polymake/client.h"
 #include "polymake/Set.h"
 #include "polymake/Array.h"
+#include "utils.h"
 #include <iostream>
 
 namespace polymake { namespace tom {
