@@ -23,5 +23,17 @@ namespace polymake { namespace tom {
    }
    FunctionWrapperInstance4perl( pm::Array<pm::Set<int, pm::operations::cmp>, void> (pm::Set<int, pm::operations::cmp> const&) );
 
+   FunctionWrapper4perl( std::list<pm::Array<pm::Set<int, pm::operations::cmp>, void>, std::allocator<pm::Array<pm::Set<int, pm::operations::cmp>, void> > > (pm::Array<pm::Set<int, pm::operations::cmp>, void>) ) {
+      perl::Value arg0(stack[0]);
+      IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Set< int > > > >() );
+   }
+   FunctionWrapperInstance4perl( std::list<pm::Array<pm::Set<int, pm::operations::cmp>, void>, std::allocator<pm::Array<pm::Set<int, pm::operations::cmp>, void> > > (pm::Array<pm::Set<int, pm::operations::cmp>, void>) );
+
+   FunctionWrapper4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> (pm::Array<pm::Set<int, pm::operations::cmp>, void>) ) {
+      perl::Value arg0(stack[0]);
+      IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Set< int > > > >() );
+   }
+   FunctionWrapperInstance4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> (pm::Array<pm::Set<int, pm::operations::cmp>, void>) );
+
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } }

@@ -1,0 +1,91 @@
+# @category Type manipulation
+# The __dual__ of the (//n//,//d//)-type //t// is a (//d//,//n//)-type.
+# @param Array<Set<Int>> t an (n,d)-type
+# @param Int n
+# @param Int d
+# @return Array<Set<Int>>
+user_function dual_type {
+	my ($t,$n,$d)=@_;
+	
+	my @r=();
+	
+	for (my $i=0; $i<@$t; ++$i) {
+		foreach (@{$t->[$i]}) {
+			push(@{$r[$_-1]},$i+1);
+		}
+	}
+	return \@r;
+}
+
+# @category Type manipulation
+# Returns a list of all subtypes of a given type //A//. Only works if //A// is fine.
+# @param Array<Set<Int>> A
+# @return Array<Array<Set<Int>>>
+user_function all_subtypes {
+	my $t=shift;
+	return star_of_type($t);
+}
+
+# @category Type manipulation
+# Returns the intersection of two types //A// and //B// if this is a type.
+# @param Array<Set<Int>> A
+# @param Array<Set<Int>> B
+# @return Array<Set<Int>> or 0 if not a type
+user_function type_intersection {
+	my ($t1, $t2)=@_;
+	my @intersection=();
+	
+	for (my $i=0; $i<@$t1; ++$i) {
+		my $is=$t1->[$i]*$t2->[$i];
+		if (@$is==0) {return 0;}
+		push(@intersection,$is);
+	}
+	return \@intersection;
+}
+
+
+# @category Basic properties
+# Returns a list of all [[VERTICES]] of //t// that contain the given pretype //p//.
+# @param TropicalOrientedMatroid t
+# @param Array<Set<Int>> p pretype; note that there may be empty positions
+# @return Array<Array<Set<Int>>>
+user_function filter {
+	my ($t,$p)=@_;
+	my @r=();
+	my $v=$t->VERTICES;
+	LOOP: foreach my $c (@$v) {
+		for (my $i=0; $i<@$c; ++$i) {
+			if (!contains($c->[$i],$p->[$i])) {
+				next LOOP;
+			}
+		}
+		push(@r,$c);
+	}
+	return \@r;
+}
+
+# @category Basic properties
+# Returns a list of all [[VERTICES]] of //t// that contain the given coarse pretype //p//.
+# @param TropicalOrientedMatroid t
+# @param Array<Int> p coarse pretype
+# @return Array<Array<Set<Int>>>
+user_function coarse_filter {
+	my ($t,$p)=@_;
+	my @r=();
+	my $v=$t->VERTICES;
+	LOOP: foreach my $c (@$v) {
+		for (my $i=0; $i<@$c; ++$i) {
+			if (@{$c->[$i]}<$p->[$i]) {
+				next LOOP;
+			}
+		}
+		push(@r,$c);
+	}
+	return \@r;
+}
+
+
+sub contains {
+	my ($set, $ss)=@_;
+	return (incl(new Set($ss), new Set($s))<=0);
+}

@@ -146,23 +146,6 @@ sub printtype {
 	foreach (@$t) {print "{@$_} "};
 }
 
-# @category Type manipulation
-# Returns the intersection of //type1// and //type2// if this is a type.
-# @param Array<Set<Int>> type1
-# @param Array<Set<Int>> type1
-# @return Array<Set<Int>> of 0 if not a type
-user_function type_intersection {
-	my ($t1, $t2)=@_;
-	my @intersection=();
-	
-	for (my $i=0; $i<@$t1; ++$i) {
-		my $is=$t1->[$i]*$t2->[$i];
-		if (@$is==0) {return 0;}
-		push(@intersection,$is);
-	}
-	return \@intersection;
-}
-
 
 # checks whether two given types are neighbours
 sub neighs {

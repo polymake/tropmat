@@ -17,7 +17,7 @@ property DIM : Int;
 property RANK : Int;
 
 # @category Basic properties
-# The parameters ([[n|N_PHP]], [[d|RANK]]) of the tropical oriented matroid.
+# The parameters ([[N_PHP|n]], [[RANK|d]]) of the tropical oriented matroid.
 property PARAMS : Array<Int>;
 
 # @category Basic properties
@@ -51,14 +51,16 @@ property VERTICES : Array<Array<Set<Int>>>;
 # All types of a tropical oriented matroids.
 property TYPES : Array<Array<Set<Int>>>;
 
+
 # @category Basic properties
-# Let n=[[N_PHP]] and d=[[DIM]].
+# Let n=[[N_PHP]] and d=[[RANK]].
 # 
 # The tropical oriented matroid is in __general position__ if
-# 	[[N_TOPES]] = [[binomial]](n+d, d),
+# 	[[N_TOPES]] = [[binomial]](n+d-1, d-1),
 # i.e., if every "integral" point in the simplex n&Delta;<sup>d-1</sup> is a vertex in the
 # mixed subdivision.
 property GENERAL_POSITION : Bool;
+
 
 # @category Basic properties
 # The apices of the tropical (pseudo)hyperplanes of the tropical oriented matroid.
@@ -85,7 +87,6 @@ property COMPARABILITY_AXIOM : Bool;
 # The __elimination axiom__ states that for any two types there is an [[ELIMINATION]].
 property ELIMINATION_AXIOM : Bool;
 
-
 # @category Axioms
 # Returns true if all tropical oriented matroid axioms are satisfied.
 property IS_TOM : Bool;
@@ -94,6 +95,7 @@ property IS_TOM : Bool;
 # @category Basic properties
 # Returns true if the tropical oriented matroid is the [[uniform]] one.
 property IS_UNIFORM : Bool;
+
 
 # @category Producing a new TropicalOrientedMatroid
 # The __dual__ of tropical oriented matroid with parameters ([[N_PHP|n]],[[RANK|d]]) is the tropical oriented matroid with parameters (d,n) obtained by replacing every vertex by its [[dual_type]].

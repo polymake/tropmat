@@ -1,0 +1,193 @@
+object TropicalOrientedMatroid {
+
+
+rule N_PHP : TOPES | VERTICES | TYPES {
+   $this->N_PHP=@{${$this->TOPES | VERTICES | TYPES}[0]};
+}
+weight 0.10;
+
+rule PARAMS : N_PHP, RANK {
+	my @p=();
+	push (@p, $this->N_PHP, $this->RANK);
+	$this->PARAMS=\@p;
+}
+weight 0.10;
+
+rule N_TOPES : TOPES {
+	$this->N_TOPES=@{($this->TOPES)};
+}
+weight 0.10;
+
+rule N_TYPES : TYPES {
+	$this->N_TYPES=@{($this->TYPES)};
+}
+weight 0.10;
+
+
+rule N_VERTICES : VERTICES {
+	$this->N_VERTICES=@{($this->VERTICES)};
+}
+weight 0.10;
+
+rule N_APICES : APICES {
+	$this->N_APICES=@{($this->APICES)};
+}
+weight 0.10;
+
+
+rule DIM : VERTICES | TOPES | TYPES {
+	$this->DIM=dim($this->VERTICES | TOPES | TYPES)-1;	
+}
+weight 0.20;
+
+rule RANK : VERTICES | TOPES | TYPES {
+	$this->RANK=dim($this->VERTICES | TOPES | TYPES);	
+}
+weight 0.20;
+
+rule DIM : RANK {
+	$this->DIM = $this->RANK-1;
+}
+rule RANK : DIM {
+	$this->RANK = $this->DIM+1;
+}
+
+rule IS_UNIFORM : TOPES, RANK {
+	my $t=$this->TOPES;
+	foreach my $tope (@$t) {
+	my $last=$this->RANK;
+		foreach (@$tope) {
+			if ($_->[0]>$last) {
+				$this->IS_UNIFORM= 0; return;
+			}
+			$last=$_->[0];
+		}
+	}
+	$this->IS_UNIFORM= 1;
+}
+
+rule TOPES : VERTICES {
+	$this->TOPES=topes_from_vertices($this->VERTICES);
+}
+weight 2.00;
+
+rule VERTICES : TOPES, RANK, GENERAL_POSITION {
+	if ($this->GENERAL_POSITION) {
+		$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
+	} else {
+		$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);	
+	}
+}
+precondition : GENERAL_POSITION;
+weight 2.00;
+
+#rule VERTICES : TOPES, RANK, GENERAL_POSITION {
+#	$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);
+#}
+#weight 3.00;
+
+rule APICES : VERTICES, RANK {
+	my @r=();
+	my $v=$this->VERTICES;
+	foreach my $vertex (@$v) {
+		foreach (@$vertex) {
+			if (@$_==$this->RANK) {
+				push(@r,$vertex);
+				last;
+			}
+		}
+	}
+	$this->APICES=\@r;
+}
+weight 0.50;
+
+rule GENERAL_POSITION : N_TOPES, DIM, N_PHP {
+	my $x = binomial($this->N_PHP+$this->DIM, $this->DIM);
+	$this->GENERAL_POSITION = ($this->N_TOPES==$x);
+}
+weight 0.20;
+
+rule BOUNDARY_AXIOM : TOPES | VERTICES , N_PHP, RANK {
+	$this->BOUNDARY_AXIOM = boundary_axiom($this->TOPES | VERTICES, $this->N_PHP, $this->RANK);
+}
+weight 0.30;
+
+rule SURROUNDING_AXIOM : VERTICES {
+	$this->SURROUNDING_AXIOM = 1;
+}
+weight 0.10;
+
+rule COMPARABILITY_AXIOM : TYPES, RANK {
+	$this->COMPARABILITY_AXIOM=comparability_axiom($this->TYPES, $this->RANK);
+}
+weight 2.00;
+
+rule ELIMINATION_AXIOM : TYPES, N_PHP {
+	$this->ELIMINATION_AXIOM=elim_axiom($this);
+}
+weight 5.00;
+
+sub elim_axiom {
+# this just performs a brute force search
+	my $this=shift;
+	my @v = @{$this->TYPES};
+	for (my $i=0; $i<@v-1; ++$i) {
+		for (my $j=$i+1; $j<@v; ++$j) {
+			for (my $k=1; $k <= $this->N_PHP; ++$k) {
+				my $e=$this->ELIMINATION($v[$i],$v[$j],$k);
+				if ($e==0) {
+					return 0;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+rule IS_TOM : BOUNDARY_AXIOM, SURROUNDING_AXIOM, COMPARABILITY_AXIOM, ELIMINATION_AXIOM {
+	$this->IS_TOM = ($this->BOUNDARY_AXIOM and $this->SURROUNDING_AXIOM and $this->COMPARABILITY_AXIOM and $this->ELIMINATION_AXIOM);
+}
+weight 0.10;
+
+rule TYPES : VERTICES {
+	$this->TYPES=types_from_vertices($this->VERTICES);
+}
+precondition : GENERAL_POSITION;
+weight 3.00;
+
+rule VERTICES : TYPES {
+	my @t={$this->TYPES};
+	my @r=();
+	
+	foreach (@t) {
+		if ($this->TYPE_RANK($_)==1) {
+			push(@r,$_);
+		}
+	}
+	$this->VERTICES= \@r;
+}
+weight 1.50;
+
+#rule TYPES : VERTICES {
+#	@v=@{$this->VERTICES};
+
+#	$this->TYPES=@v;
+#}
+#weight 5.0;
+
+
+
+rule DUAL : VERTICES, RANK, N_PHP {
+ 
+	my @v = @{$this->VERTICES};
+	my @r = ();
+	foreach (@v) {
+		push(@r,dual_type($_,$this->N_PHP, $this->RANK));
+	}
+	my $t= new TropicalOrientedMatroid(VERTICES=>\@r);
+	$this->DUAL=$t;
+}
+weight 1.0;
+
+
+}

@@ -10,6 +10,7 @@ namespace polymake { namespace tom {
 
 list<Set<int> > rec_subsets(const Set<int> &);
 
+// list all subsets of a given set
 Array<Set<int> > enumerate_subsets(const Set<int> & s) {
 	list<Set<int> > r;
 	
@@ -44,8 +45,8 @@ list<Set<int> > rec_subsets(const Set<int> & s) {
 }	
 	
 UserFunction4perl("# @category Utilities"
-				"# Return all non-empty subsets of a given set //set//."
-				"# @param Set set"
+				"# Return all non-empty subsets of a given set //s//."
+				"# @param Set s"
 				"# @return Array<Set>",
 				&enumerate_subsets, "enumerate_subsets");
 
@@ -77,23 +78,23 @@ UserFunction4perl("# @category Utilities"
 // }
 
 
-std::list<Array<Set<int> > > all_subtypes(const Array<Set<int> >);
+void all_subtypes(std::list<Array<Set<int> > >&, const Array<Set<int> >);
 
 
+// compute all types_from_vertices
+// works only for toms in general position
+// computes subtypes of each vertex and then unites these sets -> could be done better but does not seem to be a bottle neck
 Array<Array<Set<int> > > types_from_vertices(const Array<Array<Set<int> > > vertices) {
-
-	const int r(vertices.size());
 
 	Set<Array<Set<int> > > types;	// will contain the types
 	
 	Array<Set<int> > curr;	// current vertex
-	for (int i=0; i<r; ++i) {	// go thru all vertices
-		curr = vertices[i];
-		std::list<Array<Set<int> > > mylist=all_subtypes(curr);	// contains all types containing current vertex
-
+	for (Array<Array<Set<int> > >::const_iterator it = vertices.begin(); it != vertices.end(); ++it) { 	// go thru all vertices
+		std::list<Array<Set<int> > > mylist; // all types containing current vertex
+		all_subtypes(mylist, *it);	
 		
 		// now add everything to types
-		for (std::list<Array<Set<int> > >::iterator l = mylist.begin(); l!=mylist.end(); ++l) {
+		for (std::list<Array<Set<int> > >::iterator l = mylist.begin(); l != mylist.end(); ++l) {
 			types += *l;
 		}
 	}
@@ -103,50 +104,56 @@ Array<Array<Set<int> > > types_from_vertices(const Array<Array<Set<int> > > vert
 }
 
 
-std::list<Array<Set<int> > > all_subtypes(const Array<Set<int> > curr) {
+std::list<Array<Set<int> > > fold_sets(const std::list<Array<Set<int> > > & prev, const Array<Array<Set<int> > > & sets, int current) {
 
-	std::list<Array<Set<int> > > mylist;	// will contain types containing type
-	mylist.push_back(curr);
-	//cout<<"curr "<<curr<<endl;
-	std::list<Array<Set<int> > >::iterator curr_v = mylist.begin();
-
-	while (curr_v!=mylist.end()) {	// perform BFS on mylist
-							
-		for (int j = 0; j < curr_v->size(); ++j) {	// go thru entries of current vertex
-			Set<int> & set = (*curr_v)[j];	// current entry of curr_v
-			
-			if (set.size() > 1) {
-				
-				Array<Set<int> > subsets = enumerate_subsets(set);
-				int setsize=set.size();
-				
-				for (Array<Set<int> >::iterator sit = subsets.begin(); sit != subsets.end(); ++sit) {
-				// for each subset of s ...
-					if (setsize > sit->size()){
-						Array<Set<int> > next = *curr_v;
-						next[j] = *sit;	// create a type with current 	position j replaced by that subset
-						mylist.push_back(next);
-						//cout<<"next "<<next<<endl;
-					}
-				}
-				
-				++curr_v;	// proceed
-				break;
-			}
-			else if (j==curr_v->size()-1) {
-				++curr_v;
-				break;
-			}
+	int n = sets.size();
+	
+	Array<Set<int> > c = sets[current];	// next entry
+	
+	std::list<Array<Set<int> > > r;
+	
+	for (std::list<Array<Set<int> > >::const_iterator it = prev.begin(); it != prev.end(); ++it) {
+		for (Array<Set<int> >::const_iterator s = c.begin(); s != c.end(); ++s) {
+			Array<Set<int> > next = *it;
+			next[current] = *s;
+			r.push_back(next);
 		}
 	}
-	return mylist;
-
+	
+	if (current == n-1) return r;
+	
+	return fold_sets(r, sets, current + 1);
 }
 
+// computes all subtypes of a given type curr
+void all_subtypes(std::list<Array<Set<int> > > & ret, const Array<Set<int> > curr) {
+
+	int n = curr.size();
+	Array<Set<int> > init(n);
+
+	ret.push_back(init);
+	
+	Array<Array<Set<int> > > subsetlist(n);
+	int i=0;
+	for (Array<Set<int> >::const_iterator it = curr.begin(); it != curr.end(); ++it) {
+		subsetlist[i] = enumerate_subsets(*it);
+		++i;
+	}
+
+	ret = fold_sets(ret, subsetlist, 0);
+}
+
+Array<Array<Set<int> > > star_of_type(const Array<Set<int> > curr) {
+	std::list<Array<Set<int> > > r;
+	all_subtypes(r, curr);
+	Array<Array<Set<int> > > ret(r.begin(), r.end());
+	return ret;
+}
 
 
 Function4perl(&types_from_vertices, "types_from_vertices");
 
+Function4perl(&star_of_type, "star_of_type");
 
 
 } } // end of namespaces

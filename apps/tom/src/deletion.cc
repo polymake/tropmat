@@ -5,7 +5,7 @@
 namespace polymake { namespace tom {
 
 
-perl::Object contraction(const Array<Array<Set<int> > > &vertices, const int n, const int d, int pos) {
+perl::Object deletion(const Array<Array<Set<int> > > &vertices, const int n, const int d, int pos) {
 	const int r(vertices.size()), c(vertices[0].size());
 	
 	perl::Object p("TropicalOrientedMatroid");
@@ -35,6 +35,6 @@ perl::Object contraction(const Array<Array<Set<int> > > &vertices, const int n, 
 }
 
 
-Function4perl(&contraction, "contraction");
+Function4perl(&deletion, "deletion");
 
 } }

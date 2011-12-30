@@ -95,12 +95,12 @@ precondition : DIM { $this->DIM<=3, $this->DIM>=2 }
 
 # @category Visualization
 # Visualises the given dual pseudohyperplanes in different colours.
-# @param Set<Int> phps
+# @param Set<Int> phps default: draw all pseudohyperplanes
 # @return Visual::TropicalOrientedMatroid
 user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 	my ($self, $hps) = @_;
 	my @h;
-	if ($hps=='All') {
+	unless (defined $hps) {
 		@h=();
 		for (my $i=1; $i<=$self->N_PHP; ++$i){
 			push(@h,$i);
@@ -197,15 +197,15 @@ sub toString {
 
 
 # @category Visualization
-# Visualizes the given pseudohyperplanes in the mixed subdivision 
+# Visualizes the subcomplex of the mixed subdivision 
 # of n&Delta;<sup>d-1</sup> (d=[[DIM]] and n=[[N_PHP]])
-# corresponding to the tropical oriented matroid.
-# @param Set<Int> phps keyword All chooses all pseudohyperplanes
+# corresponding to the given tropical pseudohyperplanes.
+# @param Set<Int> phps default: draw all pseudohyperplanes
 # @return Visual::TropicalOrientedMatroid
 user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
 	my ($self, $hps)=@_;
 	my @h;
-	if ($hps=='All') {
+	unless (defined $hps) {
 		@h=();
 		for (my $i=1; $i<=$self->N_PHP; ++$i){
 			push(@h,$i);
@@ -259,52 +259,52 @@ precondition : DIM { $this->DIM<=3 }
 # Visualizes the intersection of the given pseudohyperplanes.
 # @param Set<int> phps
 # @return Visual::TropicalOrientedMatroid
-user_method VISUAL_INTERSECTION : VERTICES, DIM {
-	my ($self, $hps)=@_;
-	my @h;
-	if ($hps=='All') {
-		@h=();
-		for (my $i=1; $i<=$self->N_PHP; ++$i){
-			push(@h,$i);
-		}
-	} else {
-		@h = @{$hps};
-	}
-	my $d=$self->DIM;
-
-	my @v=@{$self->VERTICES};
-	my @r=();	# will contain types in the intersection
-	
-	VERTICES: foreach (@v) {		# go thru VERTICES
-		my @s=@{$_};
-		foreach (@h){				# go thru hyperplanes
-			unless (@{$s[$h-1]} >= 2) {
-				next VERTICES;
-			}
-		}
-		push(@r,\@s);	# if we get here, every tested position has at least 2 elts
-	}
-
-	my $zero=new Vector<Float>($d);
-	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
-
-	# now go thru cells in intersection
-	foreach my $curr (@r) {
-	
-		my $m=$origin;
-		
-		foreach (@h) {
-			my $entry=$curr->[$_];
-			for (my $i=0; $i<@$entry-1; ++$i) {
-				for (my $j=$i+1; $j<@$entry; ++$j) {
-					my @entry=@$entry;
-					my $p=get_base_cell($entry[$i],$entry[$j],$entry,$d);
-				}
-			}
-		}
-	}
-
-}
+#user_method VISUAL_INTERSECTION : VERTICES, DIM {
+#	my ($self, $hps)=@_;
+#	my @h;
+#	if ($hps=='All') {
+#		@h=();
+#		for (my $i=1; $i<=$self->N_PHP; ++$i){
+#			push(@h,$i);
+#		}
+#	} else {
+#		@h = @{$hps};
+#	}
+#	my $d=$self->DIM;
+#
+#	my @v=@{$self->VERTICES};
+#	my @r=();	# will contain types in the intersection
+#	
+#	VERTICES: foreach (@v) {		# go thru VERTICES
+#		my @s=@{$_};
+#		foreach (@h){				# go thru hyperplanes
+#			unless (@{$s[$h-1]} >= 2) {
+#				next VERTICES;
+#			}
+#		}
+#		push(@r,\@s);	# if we get here, every tested position has at least 2 elts
+#	}
+#
+#	my $zero=new Vector<Float>($d);
+#	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
+#
+#	# now go thru cells in intersection
+#	foreach my $curr (@r) {
+#	
+#		my $m=$origin;
+#		
+#		foreach (@h) {
+#			my $entry=$curr->[$_];
+#			for (my $i=0; $i<@$entry-1; ++$i) {
+#				for (my $j=$i+1; $j<@$entry; ++$j) {
+#					my @entry=@$entry;
+#					my $p=get_base_cell($entry[$i],$entry[$j],$entry,$d);
+#				}
+#			}
+#		}
+#	}
+#
+#}
 
 
 
@@ -381,8 +381,7 @@ sub shift_php {
 
 sub get_color_hsv {
 	my ($ind, $total) = @_;
-	my $r=new HSV(360/$total*$ind,1,1);
-	return $r;
+	return new HSV(360/$total*$ind,1,1);
 }
 sub get_color {	# tud
 	my ($ind, $total) = @_;

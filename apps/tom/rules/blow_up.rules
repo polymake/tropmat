@@ -1,0 +1,110 @@
+object TropicalOrientedMatroid {
+
+# @category Producing a new TropicalOrientedMatroid
+# Produces a new TropicalOrientedMatroid by __blowing up__ the //i//-th pseudohyperplane with respect to the permutation //perm//.
+# @param Int i index pseudohyperplane to be blown up
+# @param Array<Int> perm permutation of [d]
+# @return TropicalOrientedMatroid
+user_method BLOW_UP : VERTICES, TOPES, RANK, DIM, N_PHP {
+	my ($self, $j, $perm) = @_;
+	my $d = $self->RANK;
+
+	my @p;
+	if (defined($perm)) {
+		@p = @$perm;
+		if (@p != $d) {
+			die "argument is not a permutation of [$d].";
+		}
+	} else {
+		@p=();
+		for (my $i=1; $i<=$d; ++$i) {
+			push(@p,$i);
+		}
+	}
+	my @invp=();
+	my @partp=();
+	for (my $i=1; $i<=$d; ++$i) {
+		my @l=(); push @l, $p[$d-$i];
+		push(@invp,\@l);
+		my @l=(); push @l, $p[$i-1];
+		push(@partp,\@l);
+	}
+		
+	my @v = @{$self->VERTICES};
+	my @t = @{$self->TOPES};
+
+	my @r = ();		# will contain new vertices
+
+	my @topes = ();
+	
+	foreach my $t (@t) {
+		my @nt=@$t;
+		push @nt, $t->[$j-1];
+		push @topes, \@nt;
+	}
+	my $otopes=new Set<Array<Set<Int>>>(@topes);
+	print $otopes->size."\n";
+
+	foreach my $v (@v) {
+		if (@{$v->[$j-1]}>=2) {
+			my @nv=@$v;
+			push @nv, refine_one_entry($v->[$j-1],\@invp);
+			push @r, \@nv;
+		} else {
+			my @nv=@$v;
+			push @nv, $v->[$j-1];
+			push @r, \@nv;
+		}
+	}
+	
+
+#	foreach my $v (@v) {
+#		if (@{$v->[$j-1]}==1) {
+#			# vertices not in j-th hp
+#			my @nv=@$v;
+#			push @nv, $v->[$j-1];
+#			push @r, \@nv;
+#		} else {
+#			# vertices in j-th hp
+#			my @nv=@$v;
+#			push @nv, refine_one_entry($v->[$j-1],\@invp);
+#			push @r, \@nv;
+			
+			# vertices in new hp
+#			my @nv=refine_whole_type($v,\@partp);
+#			push @nv, $v->[$j-1];
+#			push @r, \@nv;
+#		}
+#	}
+
+	
+	my $t=new TropicalOrientedMatroid(VERTICES=>\@r);
+
+#	return $t;
+
+	my $ntopes=new Set<Array<Set<Int>>>($t->TOPES);
+
+	$ntopes+=$otopes;
+	
+
+#	my $n=$self->N_PHP+1;
+	
+#	my @tmp=();
+#	for (my $i=1; $i<=$d; ++$i) {
+#		my @y=();
+#		my @x=();
+#		push @x,$i;
+#		for (my $k=1; $k<=$n; ++$k) {
+#			push @y,\@x;
+#		}
+#		push @tmp,\@y;
+#	}
+#	my $bnd=new Set<Array<Set<Int>>>(@tmp);
+#	$topes+=$bnd;
+#	print $topes;
+	
+	return new TropicalOrientedMatroid(TOPES=>$ntopes, VERTICES=>\@r);
+
+}
+
+}

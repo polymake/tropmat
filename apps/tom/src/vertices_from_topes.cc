@@ -22,49 +22,25 @@ Array<Array<Set<int> > > vertices_from_topes(const Array<Array<Set<int> > > tope
 
 Function4perl(&vertices_from_topes, "vertices_from_topes");
 
-Array<Array<Set<int> > > vertices_from_topes_nongen(const Array<Array<Set<int> > > topes, const int d) {
 
-	std::vector<tope> t = types2topes(topes);
-	vertexset vertices;
-	
-	for (int i=0; i<int(t.size())-1; ++i) {
-		vertices_in_nh_nongen(vertices,d,i,t);
-	}
-	select_good_ones(vertices,t,d);
-	
-	Array<Array<Set<int> > > ret(vertices.begin(), vertices.end());
-	return ret;
-}
-
-Function4perl(&vertices_from_topes_nongen, "vertices_from_topes_nongen");
-
-
-// find vertices in neighbourhood (i.e., containing) of i-th tope
+// find vertices in neighbourhood of (i.e., containing) i-th tope
 void vertices_in_nh(vertexset & vertices, int d, int i, const std::vector<tope> & all) {
+	// vertices - the list found so far
+	// d - rank
+	// i - index of current tope
+	// all - list of all topes
 	tope current=all[i];
 	std::vector<tope> nh=neighbourhood(d,i,all);
 	get_vertices_rec(vertices,d,current,0,tope2type(all[i]),nh);
 }
 
-void vertices_in_nh_nongen(vertexset & vertices, int d, int i, const std::vector<tope> & all) {
-	tope current=all[i];
-	get_vertices_rec_nongen(vertices,d,current,i+1,tope2type(all[i]),all);	
-}
-
 
 void get_vertices_rec(vertexset & vertices, int d, tope & t, int j, const tomtype curr, const std::vector<tope> & all) {
-// 	std::cout<<std::endl<<"step down"<<std::endl<<"j: "<<j<<std::endl;
-// 	std::cout<<"current: "; print(curr);
-// 	std::cout<<"vertices: "; print(vertices);
-
 	// go thru all topes in the neighbourhood of current type
 	for (int k=j; k<int(all.size()); ++k) {
-// 		std::cout<<"  k: "<<k<<std::endl;
 		// form the union with the next tope
 		tomtype newtype=union_of_types(curr,all[k]);
-// 		cout<<"newtype: "; print(newtype);
 		Array<Set<int> > a(newtype.begin(),newtype.end());
-// 		std::cout<<"rank: "<<rank(a,d)<<"  edges: "<<nedges(newtype)<<std::endl;
 		if (acyclic(newtype,d)) {	// if the type graph contains a cycle this can't be a type
 			if (nedges(newtype)==int(curr.size())+d-1) {	// if type if full-dim, add to list
 				vertices += pmtype(newtype);
@@ -75,28 +51,6 @@ void get_vertices_rec(vertexset & vertices, int d, tope & t, int j, const tomtyp
 	}
 }
 
-// recursively compute list of potential vertices
-void get_vertices_rec_nongen(vertexset & vertices, int d, tope & t, int j, const tomtype curr, const std::vector<tope> & all) {
-// 	std::cout<<std::endl<<"step down"<<std::endl<<"j: "<<j<<std::endl;
-// 	std::cout<<"current: "; print(curr);
-// 	std::cout<<"vertices: "; print(vertices);
-
-	for (int k=j; k<int(all.size()); ++k) {
-// 		std::cout<<"  k: "<<k<<std::endl;
-		tomtype newtype=union_of_types(curr,all[k]);
-// 		cout<<"newtype: "; print(newtype);
-		Array<Set<int> > a(newtype.begin(),newtype.end());
-// 		std::cout<<"rank: "<<rank(a,d)<<"  edges: "<<nedges(newtype)<<std::endl;
-
-		Array<Set<int> > newtypepm(newtype.begin(),newtype.end());
-		if (rank(newtypepm,d)==1) {
-			vertices += pmtype(newtype);
-			get_vertices_rec(vertices,d,t,k+1,newtype,all);	
-		} else {
-			get_vertices_rec(vertices,d,t,k+1,newtype,all);	
-		}
-	}
-}
 
 // now select the vertices that are comparable with each tope
 void select_good_ones(vertexset & vertices, const std::vector<tope> & t, int d) {
@@ -111,6 +65,8 @@ void select_good_ones(vertexset & vertices, const std::vector<tope> & t, int d) 
 		}
 	}
 }
+
+
 
 // find all topes at distance <= d-1 from i-th tope
 std::vector<tope> neighbourhood(int d, int i, const std::vector<tope> & all) {
@@ -177,8 +133,5 @@ int dist(const tope & a, const tope & b) {
 	}
 	return count;
 }
-
-
-
 
 }}	//namespace end

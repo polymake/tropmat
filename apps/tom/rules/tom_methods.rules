@@ -2,16 +2,33 @@ object TropicalOrientedMatroid {
 
 # @category Output
 # pretty printing of types
-
 user_method print_types :  N_PHP, TYPES {	# for some reason this only works if we have N_PHP here (although we certainly don't need it)	
 	my $self=shift;
-	my $t=$self->TYPES;
+	pretty_print($self->TYPES);
+}
+
+# @category Output
+# pretty printing of vertices
+user_method print_vertices :  N_PHP, TYPES {	# for some reason this only works if we have N_PHP here (although we certainly don't need it)	
+	my $self=shift;
+	pretty_print($self->VERTICES);
+}
+
+# @category Output
+# pretty printing of topes
+user_method print_topes :  N_PHP, TYPES {	# for some reason this only works if we have N_PHP here (although we certainly don't need it)	
+	my $self=shift;
+	pretty_print($self->TOPES);
+}
+
+sub pretty_print {
+	my $t=shift;
 	foreach my $cur (@$t) {
 		foreach my $s (@$cur) {
 			print "$s ";
 		}
 		print "\n";
-	}
+	}	
 }
 
 
@@ -40,507 +57,6 @@ user_method APEX : VERTICES, RANK {
 	}
 }
 
-
-# @category Producing a new TropicalOrientedMatroid
-# Returns the __deletion__, i.e., the TropicalOrientedMatroid obtained by deleting some position (hyperplane) //pos//.
-# [[N_PHP]] is reduced by one.
-# @param int pos the position to be deleted
-# @return TropicalOrientedMatroid
-#
-user_method DELETION : VERTICES, RANK, N_PHP {
-	
-	my ($self, $pos) = @_;
-	
-	if ($pos > $self->N_PHP || $pos < 1) {
-		die "index out of range";
-	}
-	
-	$pos = $pos-1;
-	my @vs = @{$self->VERTICES};
-	
-	my @r = ();
-	for (my $i=0; $i<@vs; ++$i) {
-		my @t = ();
-		my @curr = @{$vs[$i]};
-		for (my $j=0; $j<@curr; ++$j) {
-			if ($j != $pos) {
-				push(@t,$curr[$j]);
-			}
-		}
-		my $rank = $self->TYPE_RANK(\@t);
-		if ($rank==1) {
-			push(@r, \@t);
-		}
-	}
-	
-	my $t = new TropicalOrientedMatroid(VERTICES=>\@r);
-	
-	return $t;
-}
-
-# @category Producing a new TropicalOrientedMatroid
-# Returns the __contraction__, i.e., the TropicalOrientedMatroid obtained by restricting to all types that do not contain //pos//.
-# [[RANK]] is reduced by one.
-# @param int pos the position to be contracted
-# @return TropicalOrientedMatroid
-user_method CONTRACTION : TOPES, RANK, N_PHP {
-	my ($self, $pos) = @_;
-	
-	if ($pos > $self->RANK || $pos < 1) {
-		die "index out of range";
-	}
-	
-	my @vs = @{$self->TOPES};
-
-	my @r = ();
-	LOOP: for (my $i=0; $i<@vs; ++$i) {			# go thru all types
-		my @type = @{$vs[$i]};
-
-		my @ntype =();
-		for (my $j=0; $j<@type; ++$j) {			# go thru sets in current type			
-			my @curr = @{$type[$j]};
-			
-				if ($curr[0]==$pos) {			# if current set contains pos
-					next LOOP;					# go to next type
-				} elsif ($curr[0]>$pos) {
-					my @x = (); push(@x,$curr[0]-1);
-					push(@ntype, \@x);
-				} else {
-					my @x = (); push(@x, $curr[0]);
-					push(@ntype, \@x);
-				}
-		}
-		push(@r, \@ntype);						# add it to return set
-	}
-	
-	my $t = new TropicalOrientedMatroid(TOPES=>\@r);
-	
-	return $t;
-}
-
-
-# @category Producing a new TropicalOrientedMatroid
-# Produces a new TropicalOrientedMatroid by __blowing up__ the //i//-th pseudohyperplane with respect to the permutation //perm//.
-# @param Int i index pseudohyperplane to be blown up
-# @param Array<Int> perm permutation of [d]
-# @return TropicalOrientedMatroid
-user_method BLOW_UP : VERTICES, TOPES, RANK, DIM, N_PHP {
-	my ($self, $j, $perm) = @_;
-	my $d = $self->RANK;
-
-	my @p;
-	if (defined($perm)) {
-		@p = @$perm;
-		if (@p != $d) {
-			die "argument is not a permutation of [$d].";
-		}
-	} else {
-		@p=();
-		for (my $i=1; $i<=$d; ++$i) {
-			push(@p,$i);
-		}
-	}
-	my @invp=();
-	my @partp=();
-	for (my $i=1; $i<=$d; ++$i) {
-		my @l=(); push @l, $p[$d-$i];
-		push(@invp,\@l);
-		my @l=(); push @l, $p[$i-1];
-		push(@partp,\@l);
-	}
-		
-	my @v = @{$self->VERTICES};
-	my @t = @{$self->TOPES};
-
-	my @r = ();		# will contain new vertices
-
-	my @topes = ();
-	
-	foreach my $t (@t) {
-		my @nt=@$t;
-		push @nt, $t->[$j-1];
-		push @topes, \@nt;
-	}
-	my $otopes=new Set<Array<Set<Int>>>(@topes);
-	print $otopes->size."\n";
-
-	foreach my $v (@v) {
-		if (@{$v->[$j-1]}>=2) {
-			my @nv=@$v;
-			push @nv, refine_one_entry($v->[$j-1],\@invp);
-			push @r, \@nv;
-		} else {
-			my @nv=@$v;
-			push @nv, $v->[$j-1];
-			push @r, \@nv;
-		}
-	}
-	
-
-#	foreach my $v (@v) {
-#		if (@{$v->[$j-1]}==1) {
-#			# vertices not in j-th hp
-#			my @nv=@$v;
-#			push @nv, $v->[$j-1];
-#			push @r, \@nv;
-#		} else {
-#			# vertices in j-th hp
-#			my @nv=@$v;
-#			push @nv, refine_one_entry($v->[$j-1],\@invp);
-#			push @r, \@nv;
-			
-			# vertices in new hp
-#			my @nv=refine_whole_type($v,\@partp);
-#			push @nv, $v->[$j-1];
-#			push @r, \@nv;
-#		}
-#	}
-
-	
-	my $t=new TropicalOrientedMatroid(VERTICES=>\@r);
-
-	#return $t;
-
-	my $ntopes=new Set<Array<Set<Int>>>($t->TOPES);
-
-	$ntopes+=$otopes;
-	
-
-#	my $n=$self->N_PHP+1;
-	
-#	my @tmp=();
-#	for (my $i=1; $i<=$d; ++$i) {
-#		my @y=();
-#		my @x=();
-#		push @x,$i;
-#		for (my $k=1; $k<=$n; ++$k) {
-#			push @y,\@x;
-#		}
-#		push @tmp,\@y;
-#	}
-#	my $bnd=new Set<Array<Set<Int>>>(@tmp);
-#	$topes+=$bnd;
-#	print $topes;
-	
-	return new TropicalOrientedMatroid(TOPES=>$otopes);
-
-}
-
-
-# @category Producing a new TropicalOrientedMatroid
-# Produces a new TropicalOrientedMatroid by __placing__ vertices in
-# &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
-# The result will be a tropical oriented matroid with parameters (n+1,d); i.e., the [[N_PHP|number of pseudohyperplanes]] is increased by 1.
-# It will be non-realisable if and only if the input was. 
-# @param Array<Int> perm permutation of [d], default: [1, ..., d]
-# @return TropicalOrientedMatroid
-user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
-	
-	my ($self, $perm) = @_;
-	my $d = $self->RANK;
-	
-	my @p;
-	if (defined($perm)) {
-		@p = @$perm;
-		if (@p != $d) {
-			die "argument is not a permutation of [$d].";
-		}
-	} else {
-		@p=();
-		for (my $i=1; $i<=$d; ++$i) {
-			push(@p,$i);
-		}
-	}
-	my @v = @{$self->VERTICES};
-
-	my @r = ();		# will contain new vertices
-	
-	my @used = ();	# already used values from [d]
-	my @oldused = ();
-	foreach (@p) {
-		@oldused = @used;
-		
-		my $curr = $_;
-		push(@used, $curr);
-		foreach (@v) {
-
-			if (my $ref = $self->typeminus($_,\@oldused)){
-				my @x = sort(@used);
-				push(@$ref, \@x);
-
-				if ($self->TYPE_RANK($ref)==1) {
-					push(@r, $ref);
-				}
-			}
-		}
-	}
-	my $t = new TropicalOrientedMatroid(VERTICES=>\@r);
-	return $t;
-}
-
-# @category Producing a new TropicalOrientedMatroid
-# Produces a new TropicalOrientedMatroid by __placing__ vertices in
-# &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
-# The result will be a tropical oriented matroid with paramters (n,d+1); i.e., the [[RANK|rank]] is increased by 1.
-# It will be non-realisable if and only if the input was.
-# @param Array<Int> perm permutation of [n], default: [1, ..., n]
-# @return TropicalOrientedMatroid
-user_method D_PLACING : VERTICES, RANK, DIM, N_PHP {
-	my ($self, $perm) = @_;
-	
-	my $n = $self->N_PHP;
-	my $d = $self->RANK;
-
-	my @p;
-	if (defined($perm)) {
-		@p = @$perm;
-		if (@p != $n) {
-			die "argument is not a permutation of [$n].";
-		}
-	} else {
-		@p=();
-		for (my $i=1; $i<=$n; ++$i) {
-			push(@p,$i);
-		}
-	}
-
-	my @v = @{$self->VERTICES};
-	my @r = ();		# will contain new vertices
-
-	my @old_height=@v;
-	my @new_height=();
-	foreach (@p) {
-		
-		my $curr = $_;
-
-		foreach (@old_height) {
-		
-			my @curr_cell=@$_;
-			my @new_cell=@curr_cell;
-			my @entry=@{$curr_cell[$curr-1]};
-			push(@entry,$d+1);	# add new entry d+1 to the current position
-			my @new_entry=sort(@entry);
-			$new_cell[$curr-1]=\@new_entry;
-			push(@r,\@new_cell);
-			
-			my @new_cell=@curr_cell;	# replace current position by {d+1}
-			my @tmp=($d+1);
-			$new_cell[$curr-1]=\@tmp;
-			if (rank(\@new_cell,$d+1)==2) { push(@new_height,\@new_cell); }
-		}
-		@old_height=@new_height;
-		@new_height=();
-	}
-	my $t = new TropicalOrientedMatroid(VERTICES=>\@r);
-	return $t;
-
-}
-
-
-# @category Axioms
-# Two types are __comparable__ if their comparability graph is acyclic.
-# @param Array<Set<Int>> type1
-# @param Array<Set<Int>> type2
-# @return Bool
-user_method COMPARABLE : RANK{
-	my ($self, $type1, $type2) = @_;
-	my $t1 = @{$type1};
-	my $t2 = @{$type2};
-	if ($t1 != $t2) {
-		die "input types do not have correct length";
-	}
-
-	my $r= comparable($type1, $type2, $self->RANK);
-	if ($r) {return 1;} else {return 0;}
-}
-
-# @category Axioms
-# The __elimination__ of two types //A// and //B// with respect to a position //j// is a type C such that C<sub>j</sub>=A<sub>j</sub>&cup;B<sub>j</sub> and C<sub>i</sub>&isin;{A<sub>i</sub>, B<sub>i</sub>, A<sub>i</sub>&cup;B<sub>i</sub>} for each i&isin;[d] (where d=[[RANK]]).
-# @param Array<Set<Int>> A
-# @param Array<Set<Int>> B
-# @param Int j
-# @return Array<Set<Int>> C
-user_method ELIMINATION : TYPES, N_PHP {
-	my ($self, $type1, $type2, $j) = @_;
-	my $t1 = @{$type1};
-	my $t2 = @{$type2};
-	if ($t1 != $t2 or $t1 !=$self->N_PHP) {
-		die "input types do not have correct length";
-	}
-	if ($j<1 or $j>$self->N_PHP) {
-		die "position must be contained in [$self->N_PHP]."
-	}
-	
-	$j=$j-1;
-
-	my $s1=new Set<Int>($type1->[$j]);
-	my $s2=new Set<Int>($type2->[$j]);
-	OUTERLOOP: foreach (@{$self->TYPES}) {
-		my $set = new Set<Int>($_->[$j]);
-		unless ($set==$s1+$s2) {
-			next;
-		}
-		my $cur = $_;
-		for (my $i=0; $i<$self->N_PHP; ++$i) {
-			unless (elim_sat($type1->[$i], $type2->[$i], $cur->[$i])) {
-				next OUTERLOOP;
-			}
-		}
-		
-		return $cur;
-	}
-	return 0;
-}
-weight 2.0;
-
-
-user_method FAST_ELIMINATION : VERTICES, N_PHP, RANK {
-
-	my ($self, $type1, $type2, $j) = @_;
-	my $t1 = @{$type1};
-	my $t2 = @{$type2};
-	if ($t1 != $t2 or $t1 !=$self->N_PHP) {
-		die "input types do not have correct length";
-	}
-	if ($j<1 or $j>$self->N_PHP) {
-		die "position must be contained in [$self->N_PHP]."
-	}
-	
-	$j=$j-1;
-
-	my $s1=new Set<Int>($type1->[$j]);
-	my $s2=new Set<Int>($type2->[$j]);
-		
-	OUTERLOOP: foreach (@{$self->VERTICES}) {
-		
-		if (contains($_->[$j], $s1+$s2)) {
-			
-			my $cur = $_;
-			
-			for (my $i=0; $i<$self->N_PHP; ++$i) {	#go thru sets in  type
-				if (!elim_contains($type1->[$i],$type2->[$i], $cur->[$i])) {
-					next OUTERLOOP;
-				}
-			}
-			# if we are here then the current vertex contains sth that could be the elimination
-			
-			my @op = ();
-			push(@op,$s1+$s2);
-			my $r=$self->REFINEMENT($cur,\@op);
-			return $r;
-		}
-	}
-	
-	return 0;
-
-}
-weight 1.5;
-
-
-
-sub elim_sat {
-	my ($t1, $t2, $c) = @_;
-
-	my $s1=new Set<Int>(@{$t1});
-	my $s2=new Set<Int>(@{$t2});
-	my $s=new Set<Int>(@{$c});
-
-	return ($s==$s1 or $s==$s2 or $s==$s1+$s2);
-}
-
-sub elim_contains {
-	my ($t1, $t2, $c) = @_;
-
-	my $s1=new Set<Int>(@{$t1});
-	my $s2=new Set<Int>(@{$t2});
-	my $s=new Set<Int>(@{$c});
-
-	return (contains($s,$s1) or contains($s,$s2) or contains($s,$s1+$s2));
-}
-
-
-# @category Axioms
-# Returns true if the given type //type// is contained in the tropical oriented matroid.
-# @param Array<Set<Int>> type
-# @return Bool
-user_method CONTAINS : VERTICES, N_PHP {
-	my ($self, $type) = @_;
-		
-	my @vs = @{$self->VERTICES};
-	my @t = @{$type};
-	my $t = @t;
-	
-	LOOP: for (my $i=0; $i<@vs; ++$i) {		# go thru all vertices
-		my @v=@{$vs[$i]};
-	
-		if (@v!=$t) {
-			die "input type does not have correct length";
-		}
-		
-		for (my $j=0; $j<@t; ++$j) {	#go thru sets in input type
-			if (!contains($v[$j],$t[$j])) {
-				next LOOP;
-			}
-		}
-		return 1;
-	}
-	return 0;
-}
-precondition : GENERAL_POSITION;
-weight 2.00;
-
-# @category Axioms
-# Returns the __refinement__ of a given type //type// with respect to an ordered partition //ord_part// of [d],
-# where d=[[RANK]].
-# @param Array<Set<Int>> type
-# @param Array<Set<Int>> ord_part an ordered partition of [d]
-# @return Array<Set<Int>>
-# 
-user_method REFINEMENT {
-	my ($self, $type, $ordp) = @_;
-	my @t = @{$type};
-	my @o = @{$ordp};
-	
-	my @r=();
-	
-	TYPE: foreach (@t) {			# go thru input type
-		my $a=new Set<Int>($_);
-		foreach (@o) {		# go thru sets in ordered partition
-			my $b=new Set<Int>($_);
-			my @i= @{$a*$b};#@{intersect($a,$_)};
-			if (@i) {
-				push(@r,\@i);
-				next TYPE;
-			}
-		}
-		push(@r,$a);	# take care of the case where we do only have a partial ordered partition (i.e., last set is omitted)
-	}
-	return new Array<Set<Int>>(@r);
-}
-
-sub refine_one_entry {
-	my ($entry, $ordp) = @_;	# entry is a Set<Int>, ordp is an ordered partition
-	my $a=new Set<Int>($entry);
-	
-	foreach (@$ordp) {
-		my $b=new Set<Int>($_);
-		my @i= @{$a*$b};
-		if (@i) {
-			return new Set<Int>(@i);
-		}
-	}	
-	return $a;
-}
-sub refine_whole_type {
-	my ($type, $ordp) =@_;
-	my @r=();
-	
-	foreach (@$type) {
-		push @r, refine_one_entry($_, $ordp);
-	}
-	return @r;
-	#return new Array<Set<Int>>(@r);
-}
 
 # @category Basic properties
 # Returns the type graph of a given type.
@@ -591,38 +107,6 @@ user_method PSEUDOHYPERPLANE : VERTICES, N_PHP {
 }
 
 
-# Checks whether $set contains $subset as a subset -- to be replaced by common function incl.
-sub contains {						
-	my ($set, $subset) = @_;
-	my @s = @{$set};
-	my @ss = @{$subset};
-	LOOP: for (my $i=0; $i<@ss; ++$i) {
-		my $a=$ss[$i];
-		foreach (@s) {
-			if ($_ == $a) {
-				next LOOP;
-			}
-		}
-		return 0;
-	}
-	return 1;
-}	
-
-
-# compute the complement of a set s in [d]
-sub compl {
-	my ($s, $d) = @_;
-	my @s = @$s;
-	
-	my @r = ();
-	for (my $i=1; $i<=$d; ++$i) {
-		unless(contains(@s,($i))) {
-			push(@r, $i);
-		}
-	}
-	return \@r;
-}
-
 # @category Type manipulation
 # Takes a type //type// and subtracts a set //indices// from every position. Return the result of this operation, or 0 if the result is not a type, i.e., if there is an empty position.
 # @param Array<Set<Int>> type
@@ -652,12 +136,7 @@ user_method typeminus {
 }
 
 
-
-# @category Type manipulation
-# Returns a list of all subtypes of a given type //type//.
-# @param Array<Set<Int>> type
-# @return Array<Array<Set<Int>>>
-user_method all_subtypes {
+sub all_subtypes {
 	my ($self, $t)=@_;
 
 	my $d=$self->RANK;
@@ -666,6 +145,28 @@ user_method all_subtypes {
 	my @op=();
 	
 	return rec_subtypes($self, $t, $set, @op);
+}
+
+
+# Checks whether $set contains $subset as a subset -- uses common function incl.
+sub contains {						
+	my ($set, $subset) = @_;
+	return (incl(new Set($subset),new Set($set))<=0);
+}	
+
+
+# compute the complement of a set s in [d]
+sub compl {
+	my ($s, $d) = @_;
+	my @s = @$s;
+	
+	my @r = ();
+	for (my $i=1; $i<=$d; ++$i) {
+		unless(contains(@s,($i))) {
+			push(@r, $i);
+		}
+	}
+	return \@r;
 }
 
 
@@ -701,6 +202,7 @@ sub rec_subtypes {
 	return $list;
 }
 
+# checks whether two types are equal
 sub type_equals {
 	my ($t1,$t2)=@_;
 	

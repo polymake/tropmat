@@ -1,0 +1,192 @@
+object TropicalOrientedMatroid {
+
+# @category Producing a new TropicalOrientedMatroid
+# Returns the __deletion__, i.e., the TropicalOrientedMatroid obtained by deleting some position (hyperplane) //pos//.
+# [[N_PHP]] is reduced by one.
+# @param int pos the position to be deleted
+# @return TropicalOrientedMatroid
+#
+user_method DELETION : VERTICES, RANK, N_PHP {
+	
+	my ($self, $pos) = @_;
+	
+	if ($pos > $self->N_PHP || $pos < 1) {
+		die "index out of range";
+	}
+	
+	#return deletion($self->VERTICES, $self->N_PHP, $self->RANK, $pos);
+	
+	$pos = $pos-1;
+	my @vs = @{$self->VERTICES};
+	
+	my @r = ();
+	for (my $i=0; $i<@vs; ++$i) {
+		my @t = ();
+		my @curr = @{$vs[$i]};
+		for (my $j=0; $j<@curr; ++$j) {
+			if ($j != $pos) {
+				push(@t,$curr[$j]);
+			}
+		}
+		my $rank = $self->TYPE_RANK(\@t);
+		if ($rank==1) {
+			push(@r, \@t);
+		}
+	}
+	
+	my $t = new TropicalOrientedMatroid(VERTICES=>\@r);
+	
+	return $t;
+}
+
+# @category Producing a new TropicalOrientedMatroid
+# Returns the __contraction__, i.e., the TropicalOrientedMatroid obtained by restricting to all types that do not contain //pos//.
+# [[RANK]] is reduced by one.
+# @param int pos the position to be contracted
+# @return TropicalOrientedMatroid
+user_method CONTRACTION : TOPES, RANK, N_PHP {
+	my ($self, $pos) = @_;
+	
+	if ($pos > $self->RANK || $pos < 1) {
+		die "index out of range";
+	}
+	
+	my @vs = @{$self->TOPES};
+
+	my @r = ();
+	LOOP: for (my $i=0; $i<@vs; ++$i) {			# go thru all types
+		my @type = @{$vs[$i]};
+
+		my @ntype =();
+		for (my $j=0; $j<@type; ++$j) {			# go thru sets in current type			
+			my @curr = @{$type[$j]};
+			
+				if ($curr[0]==$pos) {			# if current set contains pos
+					next LOOP;					# go to next type
+				} elsif ($curr[0]>$pos) {
+					my @x = (); push(@x,$curr[0]-1);
+					push(@ntype, \@x);
+				} else {
+					my @x = (); push(@x, $curr[0]);
+					push(@ntype, \@x);
+				}
+		}
+		push(@r, \@ntype);						# add it to return set
+	}
+	
+	my $t = new TropicalOrientedMatroid(TOPES=>\@r);
+	
+	return $t;
+}
+
+
+# @category Producing a new TropicalOrientedMatroid
+# Produces a new TropicalOrientedMatroid by __placing__ vertices in
+# &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
+# The result will be a tropical oriented matroid with parameters (n+1,d); i.e., the [[N_PHP|number of pseudohyperplanes]] is increased by 1.
+# It will be non-realisable if and only if the input was. 
+# @param Array<Int> perm permutation of [d], default: [1, ..., d]
+# @return TropicalOrientedMatroid
+user_method N_PLACING : VERTICES, RANK, DIM, N_PHP {
+	
+	my ($self, $perm) = @_;
+	my $d = $self->RANK;
+	
+	my @p;
+	if (defined($perm)) {
+		@p = @$perm;
+		if (@p != $d) {
+			die "argument is not a permutation of [$d].";
+		}
+	} else {
+		@p=();
+		for (my $i=1; $i<=$d; ++$i) {
+			push(@p,$i);
+		}
+	}
+	my @v = @{$self->VERTICES};
+
+	my @r = ();		# will contain new vertices
+	
+	my @used = ();	# already used values from [d]
+	my @oldused = ();
+	foreach (@p) {
+		@oldused = @used;
+		
+		my $curr = $_;
+		push(@used, $curr);
+		foreach (@v) {
+
+			if (my $ref = $self->typeminus($_,\@oldused)){
+				my @x = sort(@used);
+				push(@$ref, \@x);
+
+				if ($self->TYPE_RANK($ref)==1) {
+					push(@r, $ref);
+				}
+			}
+		}
+	}
+	my $t = new TropicalOrientedMatroid(VERTICES=>\@r);
+	return $t;
+}
+
+# @category Producing a new TropicalOrientedMatroid
+# Produces a new TropicalOrientedMatroid by __placing__ vertices in
+# &Delta;<sup>n-1</sup> &times; &Delta;<sup>d-1</sup>, where n=[[N_PHP]], d=[[RANK]].
+# The result will be a tropical oriented matroid with paramters (n,d+1); i.e., the [[RANK|rank]] is increased by 1.
+# It will be non-realisable if and only if the input was.
+# @param Array<Int> perm permutation of [n], default: [1, ..., n]
+# @return TropicalOrientedMatroid
+user_method D_PLACING : VERTICES, RANK, DIM, N_PHP {
+	my ($self, $perm) = @_;
+	
+	my $n = $self->N_PHP;
+	my $d = $self->RANK;
+
+	my @p;
+	if (defined($perm)) {
+		@p = @$perm;
+		if (@p != $n) {
+			die "argument is not a permutation of [$n].";
+		}
+	} else {
+		@p=();
+		for (my $i=1; $i<=$n; ++$i) {
+			push(@p,$i);
+		}
+	}
+
+	my @v = @{$self->VERTICES};
+	my @r = ();		# will contain new vertices
+
+	my @old_height=@v;
+	my @new_height=();
+	foreach (@p) {
+		
+		my $curr = $_;
+
+		foreach (@old_height) {
+		
+			my @curr_cell=@$_;
+			my @new_cell=@curr_cell;
+			my @entry=@{$curr_cell[$curr-1]};
+			push(@entry,$d+1);	# add new entry d+1 to the current position
+			my @new_entry=sort(@entry);
+			$new_cell[$curr-1]=\@new_entry;
+			push(@r,\@new_cell);
+			
+			my @new_cell=@curr_cell;	# replace current position by {d+1}
+			my @tmp=($d+1);
+			$new_cell[$curr-1]=\@tmp;
+			if (rank(\@new_cell,$d+1)==2) { push(@new_height,\@new_cell); }
+		}
+		@old_height=@new_height;
+		@new_height=();
+	}
+	my $t = new TropicalOrientedMatroid(VERTICES=>\@r);
+	return $t;
+
+}
+
+}
