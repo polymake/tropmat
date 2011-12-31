@@ -21,10 +21,6 @@ Array<Set<int> > elimination (const Array<Set<int> > & type1, const Array<Set<in
 
 Function4perl(&elimination, "elimination");
 
-bool contains(const Set<int> & s, const Set<int> & ss) {
-	return (incl(ss, s) <=0);
-}
-
 bool is_elim(const Array<Set<int> >& cand, const Array<Set<int> > & type1, const Array<Set<int> > & type2, int pos){
 	
 	Set<int> Aj = type1[pos];
@@ -41,7 +37,7 @@ bool is_elim(const Array<Set<int> >& cand, const Array<Set<int> > & type1, const
 }
 
 
-bool elim_axiom(const Array<Array<Set<int> > > & all_types, int n, int d) {
+bool elim_axiom(const Array<Array<Set<int> > > & all_types, int n) {
 	Array<Array<Set<int> > >::const_iterator it, it2;
 	for (it = all_types.begin(); it != all_types.end(); ++it) {
 		it2 = it; ++it2;

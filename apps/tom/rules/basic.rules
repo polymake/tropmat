@@ -69,14 +69,26 @@ rule IS_UNIFORM : TOPES, RANK {
 rule TOPES : VERTICES {
 	$this->TOPES=topes_from_vertices($this->VERTICES);
 }
+precondition : GENERAL_POSITION;
 weight 2.00;
+
+rule TOPES : TYPES, DIM {
+	my @t = ();
+	foreach my $t (@{$this->TYPES}) {
+		if ($this->TYPE_RANK($t)==$this->DIM) {
+			push @t, $t;
+		}
+	}
+	$this->TOPES=\@t;
+}
+weight 1.50;
 
 rule VERTICES : TOPES, RANK, GENERAL_POSITION {
 	if ($this->GENERAL_POSITION) {
-		$this->VERTICES=vertices_from_topes($this->TOPES,$this->RANK);
-	} else {
-		$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);	
+		$this->VERTICES = vertices_from_topes($this->TOPES, $this->RANK);
 	}
+#	else
+#		$this->VERTICES=vertices_from_topes_nongen($this->TOPES,$this->RANK);	
 }
 precondition : GENERAL_POSITION;
 weight 2.00;
@@ -102,8 +114,14 @@ rule APICES : VERTICES, RANK {
 weight 0.50;
 
 rule GENERAL_POSITION : N_TOPES, DIM, N_PHP {
-	my $x = binomial($this->N_PHP+$this->DIM, $this->DIM);
-	$this->GENERAL_POSITION = ($this->N_TOPES==$x);
+	my $x = binomial($this->N_PHP + $this->DIM, $this->DIM);
+	$this->GENERAL_POSITION = ($this->N_TOPES == $x);
+}
+weight 0.20;
+
+rule GENERAL_POSITION : N_VERTICES, RANK, N_PHP {
+	my $x = binomial($this->N_PHP + $this->RANK - 2, $this->RANK - 1);
+	$this->GENERAL_POSITION = ($this->N_VERTICES == $x);
 }
 weight 0.20;
 
@@ -123,36 +141,22 @@ rule COMPARABILITY_AXIOM : TYPES, RANK {
 weight 2.00;
 
 rule ELIMINATION_AXIOM : TYPES, N_PHP {
-	$this->ELIMINATION_AXIOM=elim_axiom($this);
+	$this->ELIMINATION_AXIOM=elim_axiom($this->TYPES, $this->N_PHP);
 }
 weight 5.00;
-
-sub elim_axiom {
-# this just performs a brute force search
-	my $this=shift;
-	my @v = @{$this->TYPES};
-	for (my $i=0; $i<@v-1; ++$i) {
-		for (my $j=$i+1; $j<@v; ++$j) {
-			for (my $k=1; $k <= $this->N_PHP; ++$k) {
-				my $e=$this->ELIMINATION($v[$i],$v[$j],$k);
-				if ($e==0) {
-					return 0;
-				}
-			}
-		}
-	}
-	return 1;
-}
 
 rule IS_TOM : BOUNDARY_AXIOM, SURROUNDING_AXIOM, COMPARABILITY_AXIOM, ELIMINATION_AXIOM {
 	$this->IS_TOM = ($this->BOUNDARY_AXIOM and $this->SURROUNDING_AXIOM and $this->COMPARABILITY_AXIOM and $this->ELIMINATION_AXIOM);
 }
 weight 0.10;
 
-rule TYPES : VERTICES {
-	$this->TYPES=types_from_vertices($this->VERTICES);
+rule TYPES : VERTICES, GENERAL_POSITION, RANK {
+	if ($this->GENERAL_POSITION) {
+		$this->TYPES=types_from_vertices($this->VERTICES);
+	} else {
+		$this->TYPES=types_from_vertices_nongen($this->VERTICES, $this->RANK);
+	}
 }
-precondition : GENERAL_POSITION;
 weight 3.00;
 
 rule VERTICES : TYPES {
@@ -167,14 +171,6 @@ rule VERTICES : TYPES {
 	$this->VERTICES= \@r;
 }
 weight 1.50;
-
-#rule TYPES : VERTICES {
-#	@v=@{$this->VERTICES};
-
-#	$this->TYPES=@v;
-#}
-#weight 5.0;
-
 
 
 rule DUAL : VERTICES, RANK, N_PHP {

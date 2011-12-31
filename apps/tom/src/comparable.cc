@@ -1,7 +1,12 @@
+#include "polymake/client.h"
+#include "utils.h"
+#include <iostream>
 #include "comparable.h"
 
 
 namespace polymake { namespace tom {
+
+void neighbours(Array<Array<Set<int>, Set<int> > > &, const Array<Set<int> > &, const Array<Set<int> > &, int);
 
 // check whether each pair of vertices is comparable
 // d is the rank

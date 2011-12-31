@@ -57,9 +57,6 @@ void print(const Array<Set<int> > & t) {
 }
 
 
-
-
-
 std::vector<tope> types2topes(const Array<Array<Set<int> > > & types) {
 	std::vector<tope> r;
 

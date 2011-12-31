@@ -15,19 +15,6 @@ typedef std::vector<int> tope;
 typedef std::vector<Set<int> > tomtype;
 typedef Set<Array<Set<int> > > vertexset;
 
-void vertices_in_nh(vertexset &, int d, int i, const std::vector<tope> &);
-
-void get_vertices_rec(vertexset & vertices, int d, tope &, int j, const tomtype curr, const std::vector<tope> & all);
-
-void select_good_ones(vertexset & vertices, const std::vector<tope> & t, int d);
-
-int nedges(const tomtype &);
-bool acyclic(const tomtype &, int d);
-
-std::vector<tope> neighbourhood(int d, int i, const std::vector<tope> & all);
-
-int dist(const tope &, const tope &);
-
 tomtype union_of_types(const tomtype &, const tomtype &);
 tomtype union_of_types(const tope &, const tope &);
 tomtype union_of_types(const tope &, const tomtype &);

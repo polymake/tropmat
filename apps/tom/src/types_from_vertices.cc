@@ -1,9 +1,7 @@
 #include "polymake/client.h"
-#include "polymake/Set.h"
-#include "polymake/Array.h"
 #include "polymake/list"
 #include <iostream>
-
+#include "types_from_vertices.h"
 
 using namespace std;
 namespace polymake { namespace tom {
@@ -49,33 +47,6 @@ UserFunction4perl("# @category Utilities"
 				"# @param Set s"
 				"# @return Array<Set>",
 				&enumerate_subsets, "enumerate_subsets");
-
-
-
-// Array<Array<Set<int> > > enumerate_ordered_partitions(const Set<int> & s) {
-// 	list<list<Set<int> > > r;
-// 	
-// 	r=rec_ordps(s);
-// 	
-// 	Array<Array<Set<int > > > ret(r.begin(), r.end());
-// }
-// 
-// list<list<Set<int> > > rec_ordps(const Set<int> & s) {
-// 	list<list<Set<int> > > r;
-// 	
-// 	Array<Set<int> > all_ss=enumerate_subsets(s);
-// 
-// 	for (Array<Set<int> >::const_iterator it=all_ss.begin(); it!=all_ss.end(); ++it) {
-// 	
-// 		Set<int> new_s=s-*it;
-// 		if (new_s.size()==0) {
-// 			;
-// 		} else {
-// 		
-// 		}
-// 	}
-// 
-// }
 
 
 void all_subtypes(std::list<Array<Set<int> > >&, const Array<Set<int> >);

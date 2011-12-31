@@ -2,118 +2,23 @@ object TropicalOrientedMatroid {
 
 # @category Axioms
 # The __elimination__ of two types //A// and //B// with respect to a position //j// is a type C such that C<sub>j</sub>=A<sub>j</sub>&cup;B<sub>j</sub> and C<sub>i</sub>&isin;{A<sub>i</sub>, B<sub>i</sub>, A<sub>i</sub>&cup;B<sub>i</sub>} for each i&isin;[d] (where d=[[RANK]]).
-# This method tries to compute the elimination by brute force search (rather slow). Written in perl -- should be done in c++
+# This method tries to compute the elimination by brute force search.
 # @param Array<Set<Int>> A
 # @param Array<Set<Int>> B
 # @param Int j
-# @return Array<Set<Int>> C or 0 if elimination does not exist
+# @return Array<Set<Int>> or 0 if elimination does not exist
 user_method ELIMINATION : TYPES, N_PHP {
-	my ($self, $type1, $type2, $j) = @_;
-	my $t1 = @{$type1};
-	my $t2 = @{$type2};
-	if ($t1 != $t2 or $t1 !=$self->N_PHP) {
-		die "input types do not have correct length";
-	}
-	if ($j<1 or $j>$self->N_PHP) {
-		die "position must be contained in [$self->N_PHP]."
-	}
+	my ($self, $A, $B, $j) = @_;
 	
-	$j=$j-1;
-
-	my $s1=new Set<Int>($type1->[$j]);
-	my $s2=new Set<Int>($type2->[$j]);
-	my $sunion=$s1+$s2;
-	OUTERLOOP: foreach (@{$self->TYPES}) {
-		my $set = new Set<Int>($_->[$j]);
-		unless ($set==$sunion) {
-			next;
-		}
-		my $cur = $_;
-		for (my $i=0; $i<$self->N_PHP; ++$i) {
-			unless (elim_sat($type1->[$i], $type2->[$i], $cur->[$i])) {
-				next OUTERLOOP;
-			}
-		}
-		
-		return $cur;
-	}
-	return 0;
-}
-weight 2.0;
-
-
-# @category Axioms
-# Faster method to compute the [[ELIMINATION]] of two types //A// and //B//.
-# @param Array<Set<Int>> A
-# @param Array<Set<Int>> B
-# @param Int j
-# @return Array<Set<Int>> C or 0 if elimination does not exist
-user_method FAST_ELIMINATION : VERTICES, N_PHP, RANK {
-
-	my ($self, $type1, $type2, $j) = @_;
-	my $t1 = @{$type1};
-	my $t2 = @{$type2};
-	if ($t1 != $t2 or $t1 !=$self->N_PHP) {
-		die "input types do not have correct length";
-	}
-	if ($j<1 or $j>$self->N_PHP) {
-		die "position must be contained in [$self->N_PHP]."
-	}
+	my $e = elimination($A, $B, $j, $self->TYPES);
 	
-	$j=$j-1;
-
-	my $s1=new Set<Int>($type1->[$j]);	# A_j
-	my $s2=new Set<Int>($type2->[$j]);	# B_j
-	my $s3=$s1+$s2;						# C_j
+	if (@{$e} == 0) {return 0;}
 	
-	OUTERLOOP: foreach (@{$self->VERTICES}) {	# go through all vertices
-		
-		if (contains($_->[$j], $s3)) {	# check j-th entry
-			
-			my $cur = $_;	# this is a candidate for the elimination
-			
-			for (my $i=0; $i<$self->N_PHP; ++$i) {	# check the other entries
-				if (!elim_contains($type1->[$i], $type2->[$i], $cur->[$i])) {
-					next OUTERLOOP;
-				}
-			}
-			# if we are here then the current vertex contains something that could be the elimination
-			
-			my @op = ();	# ordered partition
-			push(@op,$s1+$s2);
-			my $r=$self->REFINEMENT($cur,\@op);
-			
-			# FIXME we're not done here
-			return $r;
-		}
-	}
-	return 0;
+	return $e;
 }
-weight 1.5;
+weight 1.0;
 
 
-
-sub elim_sat {
-	# check whether c equals one of t1, t2 or t1+t2
-	my ($t1, $t2, $c) = @_;
-
-	my $s1=new Set<Int>(@{$t1});
-	my $s2=new Set<Int>(@{$t2});
-	my $s=new Set<Int>(@{$c});
-
-	return ($s==$s1 or $s==$s2 or $s==$s1+$s2);
-}
-
-sub elim_contains {
-	# check whether c is contained in one of t1, t2 or t1+t2
-	my ($t1, $t2, $c) = @_;
-
-	my $s1=new Set<Int>(@{$t1});
-	my $s2=new Set<Int>(@{$t2});
-	my $s=new Set<Int>(@{$c});
-
-	return (contains($s,$s1+$s2));
-}
 
 
 # @category Axioms
@@ -155,6 +60,8 @@ weight 2.00;
 # 
 user_method REFINEMENT {
 	my ($self, $type, $ordp) = @_;
+	return refinement($type, $ordp, $self->RANK);
+	
 	my @t = @{$type};
 	my @o = @{$ordp};
 	

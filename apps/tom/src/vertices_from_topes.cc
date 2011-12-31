@@ -4,6 +4,19 @@
 
 namespace polymake { namespace tom {
 
+void vertices_in_nh(vertexset &, int d, int i, const std::vector<tope> &);
+
+void get_vertices_rec(vertexset & vertices, int d, tope &, int j, const tomtype curr, const std::vector<tope> & all);
+
+void select_good_ones(vertexset & vertices, const std::vector<tope> & t, int d);
+
+int nedges(const tomtype &);
+bool acyclic(const tomtype &, int d);
+
+std::vector<tope> neighbourhood(int d, int i, const std::vector<tope> & all);
+
+int dist(const tope &, const tope &);
+
 
 
 Array<Array<Set<int> > > vertices_from_topes(const Array<Array<Set<int> > > topes, const int d) {

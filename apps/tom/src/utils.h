@@ -17,7 +17,6 @@ void print(const std::vector<tope> &);
 void print(const std::vector<tomtype> &);
 void print(const Set<tomtype> &);
 void print(const Array<Set<int> > &); 
-
 void print(const vertexset &);
 
 
