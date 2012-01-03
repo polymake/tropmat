@@ -59,7 +59,7 @@ user_method APEX : VERTICES, RANK {
 
 
 # @category Basic properties
-# Returns the type graph of a given type.
+# Returns the type graph of a given type as defined by Ardila and Develin.
 # The vertices correspond to the elements in [d];
 # two nodes are connected by an edge whenever there is an entry
 # in //type// containing them both.

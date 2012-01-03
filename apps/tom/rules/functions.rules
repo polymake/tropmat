@@ -80,7 +80,7 @@ user_function simplex_face {
 # Computes the Minkowski sum of the given simplex faces.
 # Each face is given as a list of its vertices, where the vertices are labeled
 # starting from 0.
-# @param Array<Set<Int>> faces
+# @param Array<Set<Int>> faces an (n,d)-type
 # @param Int d the dimension of the big simplex
 # @return Polytope
 user_function minkowski_cell {

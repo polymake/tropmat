@@ -55,10 +55,12 @@ property TYPES : Array<Array<Set<Int>>>;
 # @category Basic properties
 # Let n=[[N_PHP]] and d=[[RANK]].
 # 
-# The tropical oriented matroid is in __general position__ if
+# The tropical oriented matroid is in __general position__ if it has the maximal number of [[TOPES]] and [[VERTICES]]. That is, it is in general position if
 # 	[[N_TOPES]] = [[binomial]](n+d-1, d-1),
 # i.e., if every "integral" point in the simplex n&Delta;<sup>d-1</sup> is a vertex in the
 # mixed subdivision.
+# Equivalently it is in general position if
+#   [[N_VERTICES]] = [[binomial]](n+d-2, d-1).
 property GENERAL_POSITION : Bool;
 
 
@@ -80,7 +82,7 @@ property BOUNDARY_AXIOM : Bool;
 property SURROUNDING_AXIOM : Bool;
 
 # @category Axioms
-# The __comparability axiom__ states that any two types are [[COMPARABLE]].
+# The __comparability axiom__ states that any two types are [[comparable]].
 property COMPARABILITY_AXIOM : Bool;
 
 # @category Axioms

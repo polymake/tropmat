@@ -75,7 +75,7 @@ weight 2.00;
 rule TOPES : TYPES, DIM {
 	my @t = ();
 	foreach my $t (@{$this->TYPES}) {
-		if ($this->TYPE_RANK($t)==$this->DIM) {
+		if ($this->TYPE_RANK($t) == $this->RANK) {
 			push @t, $t;
 		}
 	}

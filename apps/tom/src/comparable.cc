@@ -104,14 +104,6 @@ int max_entry(const Array<Set<int> > & a, const Array<Set<int> > & b) {
 }
 
 
-Function4perl(&comparable, "comparable(Array Array $)");
-InsertEmbeddedRule(	"# @category Axioms\n"
-					"# Two types are __comparable__ if their comparability graph is acyclic.\n"
-					"# @param Array<Set<Int>> type1\n"
-					"# @param Array<Set<Int>> type2\n"
-					"# @return Bool\n"
-					"user_function comparable(Array Array) {\n"
-					"	comparable($_[0], $_[1],max_entry($_[0],$_[1]));}\n");
 
 
 // determine the neighbours of each vertex in the comparability graph of two
@@ -144,6 +136,16 @@ void neighbours(Array<Array<Set<int>, Set<int> > > & nb, const Array<Set<int> > 
 		}
 	}
 }
+
+// Function4perl(&comparable, "comparable(Array Array $)");
+InsertEmbeddedRule(	"# @category Axioms\n"
+					"# Two types are __comparable__ if their comparability graph is acyclic.\n"
+					"# @param Array<Set<Int>> A\n"
+					"# @param Array<Set<Int>> B\n"
+					"# @return Bool\n"
+					"user_function comparable(ARRAY ARRAY) {\n"
+					"	my ($a,$b)=@_;\n"
+					"	comparable($a, $b, max_entry($a,$b));}\n");
 
 
 } }

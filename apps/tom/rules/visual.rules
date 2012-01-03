@@ -19,7 +19,7 @@ object TropicalOrientedMatroid {
 user_method VISUAL_ALL : VERTICES, DIM, N_PHP{
 	my ($self)=@_;
 	
-	compose($self->VISUAL_MIXED_SUBDIVISION(EdgeColor=>'grey', FacetStyle=>'hidden'), $self->VISUAL_DUAL_PHPS('All'));
+	compose($self->VISUAL_MIXED_SUBDIVISION(EdgeColor=>'grey', FacetStyle=>'hidden'), $self->VISUAL_DUAL_PHPS());
 }
 precondition : DIM {$this->DIM<=3, $this->DIM>=2}
 
@@ -393,18 +393,6 @@ sub get_color {	# tud
 		$i=int(12/$total)*$ind+1;
 	}
 	return 'tud'.$i.'b';
-}
-
-
-
-# set difference
-sub setminus {
-	my ($set, $ss)=@_;
-	my @ret=();
-	foreach (@$set) {
-		unless (cont_elt($ss,$_)) {	push(@ret, $_);	}
-	}
-	return \@ret;
 }
 
 

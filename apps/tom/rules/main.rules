@@ -1,4 +1,13 @@
 
+CREDIT tropmat
+  Tropical oriented matroid functionality.
+  Copyright by Silke Möser.
+  http://solros.de/polymake/tropmat/
+
+label tropmat
+
+
+
 # @topic application
 # This application deals with __t__ropical __o__riented __m__atroids (toms) as defined by Ardila and Develin. TropicalOrientedMatroids are defined via their [[TYPES]] (or some subsets, such as its [[VERTICES]] or [[TOPES]]).
 # 
