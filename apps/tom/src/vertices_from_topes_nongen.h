@@ -1,6 +1,0 @@
-
-namespace polymake { namespace tom {
-
-
-
-}}
