@@ -17,6 +17,9 @@
 // along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#ifndef TOM_COMPARABLE_H
+#define TOM_COMPARABLE_H
+
 #include "polymake/Set.h"
 #include "polymake/Array.h"
 
@@ -25,3 +28,5 @@ namespace polymake { namespace tom {
 bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d);
 
 }}
+
+#endif

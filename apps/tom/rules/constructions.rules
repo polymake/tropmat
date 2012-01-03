@@ -80,7 +80,7 @@ user_method CONTRACTION : TOPES, RANK, N_PHP {
 		for (my $j=0; $j<@type; ++$j) {			# go thru sets in current type			
 			my @curr = @{$type[$j]};
 			
-				if ($curr[0]==$pos) {			# if current set contains pos
+				if ($curr[0]==$pos) {			# if current set equals pos
 					next LOOP;					# go to next type
 				} elsif ($curr[0]>$pos) {
 					my @x = (); push(@x,$curr[0]-1);

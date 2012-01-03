@@ -60,7 +60,7 @@ user_function tom_example2 {
 }
 
 # @category Producing from scratch
-# Produces a  small 2-dimensional tropical oriented matroid in non-general position.
+# Produces a  small 2-dimensional tropical oriented matroid in [[non-general position|GENERAL_POSITION]].
 # @return TropcialOrientedMatroid
 user_function tom_example3 {
 	new TropicalOrientedMatroid(VERTICES=>[[[1,2,3],[3]],[[1,2],[1,2,3]]]);

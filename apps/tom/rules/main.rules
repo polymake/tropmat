@@ -42,12 +42,12 @@ declare object TropicalOrientedMatroid;
 
 # these rules are intrinsic: they don't depend on any external software to be installed separately
 INCLUDE
-  functions.rules
-  types.rules
-  tom_properties.rules
-  tom_methods.rules
-  axioms.rules
-  constructions.rules
+  functions.rules		# user functions for Minkowski sum stuff etc.
+  types.rules			# filters and type manipulation
+  tom_properties.rules	# list of properties (and their docs)
+  tom_methods.rules		# basic methods
+  axioms.rules			# elimination, containment, refinement
+  constructions.rules	# contraction, deletion, n-, and d-placing
   blow_up.rules
   flips.rules
   visual.rules

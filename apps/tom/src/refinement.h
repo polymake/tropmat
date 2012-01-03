@@ -17,6 +17,9 @@
 // along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#ifndef TOM_REFINEMENT_H
+#define TOM_REFINEMENT_H
+
 #include "polymake/Set.h"
 #include "polymake/Array.h"
 
@@ -28,3 +31,5 @@ typedef Array<Set<int> > partition;
 tomtype refinement(const tomtype & A, const partition & op);
 
 }}
+
+#endif

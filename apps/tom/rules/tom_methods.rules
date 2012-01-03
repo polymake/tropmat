@@ -127,8 +127,8 @@ user_method PSEUDOHYPERPLANE : VERTICES, N_PHP {
 
 
 # @category Type manipulation
-# Takes a type //type// and subtracts a set //indices// from every position. Return the result of this operation, or 0 if the result is not a type, i.e., if there is an empty position.
-# @param Array<Set<Int>> type
+# Takes a type //A// and subtracts a set //indices// from every position. Return the result of this operation, or 0 if the result is not a type, i.e., if there is an empty position.
+# @param Array<Set<Int>> A
 # @param Set<Int> indices
 # @return Array<Set<Int>> or 0 if not a type
 user_method typeminus {
@@ -155,86 +155,11 @@ user_method typeminus {
 }
 
 
-sub all_subtypes {
-	my ($self, $t)=@_;
-
-	my $d=$self->RANK;
-
-	my $set=range(1, $d);
-	my @op=();
-	
-	return rec_subtypes($self, $t, $set, @op);
-}
-
-
 # Checks whether $set contains $subset as a subset -- uses common function incl.
 sub contains {						
 	my ($set, $subset) = @_;
 	return (incl(new Set($subset),new Set($set))<=0);
 }	
-
-
-# compute the complement of a set s in [d]
-sub compl {
-	my ($s, $d) = @_;
-	my @s = @$s;
-	
-	my @r = ();
-	for (my $i=1; $i<=$d; ++$i) {
-		unless(contains(@s,($i))) {
-			push(@r, $i);
-		}
-	}
-	return \@r;
-}
-
-
-sub rec_subtypes {
-	my ($tom, $t, $set, @op)=@_;
-	
-	my $list=new Set<Array<Set<Int>>>;
-	my $tmp=new Array<Set>($t);
-	$list+=$tmp;
-	
-	my $s=enumerate_subsets($set);
-#	print "all subsets of $set:\n@$s\n\n";
-	
-	foreach (@$s) { # now go thru all subsets of the set of remaining entries...
-#		print "current subset of $set: $_\n";
-
-		# and choose one as the next set in the ordered partition
-		my $new_set=$set-$_;
-		my @new_op=@op;
-		push(@new_op,$_);
-#		print "type: ";
-#		foreach (@$t) { print "{@$_} ";} print "\n";
-#		print "partition: @new_op\n";
-
-		my $new_t=$tom->REFINEMENT($t,\@new_op);
-#		print "refinement: $new_t";
-	
-		unless(type_equals($t,$new_t)) {
-			my $r=rec_subtypes($tom, $new_t, $new_set, @new_op);
-			$list+=$r;
-		}
-	}
-	return $list;
-}
-
-# checks whether two types are equal
-sub type_equals {
-	my ($t1,$t2)=@_;
-	
-	for (my $i=0; $i<@$t1; ++$i) {
-		my $s1=new Set<Int>($t1->[$i]);
-		my $s2=new Set<Int>($t2->[$i]);
-		unless ($s1==$s2){
-			return 0;
-		}
-	}
-	return 1;
-}
-
 
 
 }  # end TropicalOrientedMatroid

@@ -17,6 +17,9 @@
 // along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#ifndef TOM_VERTICES_FROM_TOPES_H
+#define TOM_VERTICES_FROM_TOPES_H
+
 #include "polymake/client.h"
 #include "polymake/Set.h"
 #include "polymake/Array.h"
@@ -39,6 +42,6 @@ tomtype union_of_types(const tope &, const tope &);
 tomtype union_of_types(const tope &, const tomtype &);
 tomtype union_of_types(const tomtype &, const tope &);
 
-
-
 }}
+
+#endif

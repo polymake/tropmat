@@ -17,6 +17,9 @@
 // along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#ifndef TOM_TYPES_FROM_VERTICES_H
+#define TOM_TYPES_FROM_VERTICES_H
+
 #include "polymake/Set.h"
 #include "polymake/Array.h"
 
@@ -25,3 +28,5 @@ namespace polymake { namespace tom {
 Array<Set<int> > enumerate_subsets(const Set<int> & s);
 
 }}
+
+#endif

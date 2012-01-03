@@ -17,6 +17,9 @@
 // along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#ifndef TOM_RANK_H
+#define TOM_RANK_H
+
 #include "polymake/Set.h"
 #include "polymake/Array.h"
 
@@ -26,3 +29,5 @@ namespace polymake { namespace tom {
 int rank(const Array<Set<int> > &type, int d);
 
 }}
+
+#endif

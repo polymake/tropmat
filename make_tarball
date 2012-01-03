@@ -1,7 +1,21 @@
 #!/bin/sh
 
 DIRNAME="tropmat"
-mkdir $DIRNAME
-cp -r URI COPYING apps include $DIRNAME
+
+noexp=(
+copyright
+make_tarball
+
+apps/tom/rules/flips.rules
+apps/tom/rules/blow_up.rules
+apps/tom/src/hidden.cc
+apps/tom/src/types_from_vertices_nongen.cc
+
+)
+
+svn export . $DIRNAME
+
+for i in "${noexp[@]}"; do rm $DIRNAME/$i; done;
+
 tar -cvzf $DIRNAME.tar.gz $DIRNAME
 rm -rf $DIRNAME

@@ -80,48 +80,6 @@ weight 2.00;
 user_method REFINEMENT {
 	my ($self, $type, $ordp) = @_;
 	return refinement($type, $ordp, $self->RANK);
-	
-	my @t = @{$type};
-	my @o = @{$ordp};
-	
-	my @r=();
-	
-	TYPE: foreach (@t) {			# go thru input type
-		my $a=new Set<Int>($_);
-		foreach (@o) {		# go thru sets in ordered partition
-			my $b=new Set<Int>($_);
-			my @i= @{$a*$b};#@{intersect($a,$_)};
-			if (@i) {
-				push(@r,\@i);
-				next TYPE;
-			}
-		}
-		push(@r,$a);	# take care of the case where we do only have a partial ordered partition (i.e., last set is omitted)
-	}
-	return new Array<Set<Int>>(@r);
-}
-
-sub refine_one_entry {
-	my ($entry, $ordp) = @_;	# entry is a Set<Int>, ordp is an ordered partition
-	my $a=new Set<Int>($entry);
-	
-	foreach (@$ordp) {
-		my $b=new Set<Int>($_);
-		my @i= @{$a*$b};
-		if (@i) {
-			return new Set<Int>(@i);
-		}
-	}	
-	return $a;
-}
-sub refine_whole_type {
-	my ($type, $ordp) =@_;
-	my @r=();
-	
-	foreach (@$type) {
-		push @r, refine_one_entry($_, $ordp);
-	}
-	return @r;
 }
 
 }
