@@ -1,0 +1,7 @@
+#!/bin/sh
+
+DIRNAME="tropmat"
+mkdir $DIRNAME
+cp -r URI COPYING apps include $DIRNAME
+tar -cvzf $DIRNAME.tar.gz $DIRNAME
+rm -rf $DIRNAME
