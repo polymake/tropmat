@@ -130,7 +130,7 @@ Array<Array<Set<int> > > topes2types(const std::vector<tope> & topes)
 }
 
 UserFunction4perl("# @category Utilities"
-				"# Converts a list of topes to a list of types.
+				"# Converts a list of topes to a list of types."
 				"# @param Array<Array<Int>> topes"
 				"# @return Array<Array<Set<Int>>>",
 				&topes2types, "topes2types");
