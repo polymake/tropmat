@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -20,7 +20,9 @@
 #include "polymake/client.h"
 #include "polymake/Set.h"
 #include "polymake/Array.h"
+#include <iostream>
 
+using namespace std;
 namespace polymake { namespace tom {
 
 int dim(const Array<Array<Set<int> > > &types) {

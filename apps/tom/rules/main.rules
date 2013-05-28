@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -16,9 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+
 CREDIT tropmat
   Tropical oriented matroid functionality.
-  Copyright by Silke Möser.
+  Copyright by Silke Horn.
   http://solros.de/polymake/tropmat/
 
 label tropmat
@@ -30,9 +31,11 @@ label tropmat
 # 
 # One can for instance check whether an object defined in this way does actually [[IS_TOM|satisfy the axioms]] of tropical oriented matroids. Moreover, one can perform simple transformation such as [[CONTRACTION]] and [[DELETION]]. For toms of [[DIM|dimension]] at most 3, there are also quite elaborate visualisation methods.
 # 
+# Note that this documentation might contain functions which are not yet publicly available. 
+# 
 # Contained in extension ''tropmat''.
 
-IMPORT common graph polytope
+IMPORT common graph polytope fan
 
 file_suffix tom
 
@@ -46,14 +49,15 @@ INCLUDE
   types.rules			# filters and type manipulation
   tom_properties.rules	# list of properties (and their docs)
   tom_methods.rules		# basic methods
-  axioms.rules			# elimination, containment, refinement
+  axioms.rules			# elimination, containment
   constructions.rules	# contraction, deletion, n-, and d-placing
-  blow_up.rules
-  flips.rules
+#  blow_up.rules
+#  flips.rules
   visual.rules
   visual_dual.rules
   examples.rules
   basic.rules
+  subdivision.rules
   
 
 

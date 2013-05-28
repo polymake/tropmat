@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -26,10 +26,26 @@
 #include "polymake/Array.h"
 #include <vector>
 #include <iostream>
-#include "vertices_from_topes.h"
 
 namespace polymake { namespace tom {
 
+// typedefs
+typedef std::vector<int> tope;
+typedef std::vector<Set<int> > tomtype;
+typedef Set<Array<Set<int> > > vertexset;
+
+typedef Array<Set<int> > pmtomtype;
+typedef Array<Set<int> > partition;
+
+
+// unions
+tomtype union_of_types(const tomtype &, const tomtype &);
+tomtype union_of_types(const tope &, const tope &);
+tomtype union_of_types(const tope &, const tomtype &);
+tomtype union_of_types(const tomtype &, const tope &);
+
+
+// printing
 void print(const tope &);
 void print(const tomtype &);
 void print(const std::vector<tope> &);
@@ -39,6 +55,7 @@ void print(const Array<Set<int> > &);
 void print(const vertexset &);
 
 
+// conversion
 tope type2tope(const Array<Set<int> >&);
 std::vector<tope> types2topes(const Array<Array<Set<int> > > &);
 
@@ -46,6 +63,7 @@ tomtype tope2type(const tope &);
 Array<Array<Set<int> > > topes2types(const std::vector<tope> & topes);
 
 Array<Set<int> > pmtype(const tomtype &);
+Array<int> pmtope(const Array<Set<int> > &);
 
 }}
 

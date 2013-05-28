@@ -25,7 +25,7 @@ Function4perl(&N_PERL, "N_PERL");
 // 
 // # @category Hidden
 // user_method N_FORTRAN {
-// 	print "Rolf? Is this you? Math without FORTRAN? I'm in! Honestly: php in N_PHP stands for PseudoHyperPlane.";
+// 	print "Rolf? Is this you? Math without FORTRAN? Honestly: php in N_PHP stands for PseudoHyperPlane.";
 // }
 // 
 // # @category Hidden

@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+
+CREDIT tropmat
 
 object TropicalOrientedMatroid {
 
@@ -41,8 +43,8 @@ weight 1.0;
 
 
 # @category Axioms
-# Returns true if the given type //type// is contained in the tropical oriented matroid. Only works for toms in [[GENERAL_POSITION]]
-# @param Array<Set<Int>> type
+# Returns true if the given type //A// is contained in the tropical oriented matroid. Only works for toms in [[GENERAL_POSITION]].
+# @param Array<Set<Int>> A
 # @return Bool
 user_method CONTAINS : VERTICES, N_PHP {
 	my ($self, $type) = @_;
@@ -69,17 +71,5 @@ user_method CONTAINS : VERTICES, N_PHP {
 }
 precondition : GENERAL_POSITION;
 weight 2.00;
-
-# @category Axioms
-# Returns the __refinement__ of a given type //type// with respect to an ordered partition //ord_part// of [d],
-# where d=[[RANK]].
-# @param Array<Set<Int>> type
-# @param Array<Set<Int>> ord_part an ordered partition of [d]
-# @return Array<Set<Int>>
-# 
-user_method REFINEMENT {
-	my ($self, $type, $ordp) = @_;
-	return refinement($type, $ordp, $self->RANK);
-}
 
 }

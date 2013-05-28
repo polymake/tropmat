@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -25,11 +25,11 @@ namespace polymake { namespace tom {
 
 Set<int> ref_one_comp(const Set<int> & s, const partition & op);
 
-tomtype refinement(const tomtype & A, const partition & op) {
-	tomtype r(A.size());
+pmtomtype refinement(const pmtomtype & A, const partition & op) {
+	pmtomtype r(A.size());
 	
 	int i=0;
-	for (tomtype::const_iterator it = A.begin(); it != A.end(); ++it) {
+	for (pmtomtype::const_iterator it = A.begin(); it != A.end(); ++it) {
 		r[i] = ref_one_comp(*it, op); 
 		++i;
 	}
@@ -38,7 +38,7 @@ tomtype refinement(const tomtype & A, const partition & op) {
 }
 
 // this version also works with incomplete partitions
-tomtype refinement_gen(const tomtype & A, const partition & op, int d) {
+pmtomtype refinement_gen(const pmtomtype & A, const partition & op, int d) {
 	Set<int> u;
 	for (int i=0; i<op.size(); ++i) {
 		u = u + op[i];
@@ -59,8 +59,14 @@ tomtype refinement_gen(const tomtype & A, const partition & op, int d) {
 	return refinement(A, nop);
 }
 
-Function4perl(&refinement_gen, "refinement");
+// Function4perl(&refinement_gen, "refinement");
 
+int max_entry(const Array<Set<int> > &, const Array<Set<int> > &);
+
+
+pmtomtype ref4perl(const pmtomtype & A, const pmtomtype & P) {
+	return refinement_gen(A, P, max_entry(A,P));
+}
 
 Set<int> ref_one_comp(const Set<int> & s, const partition & op) {
 	for (partition::const_iterator it = op.begin(); it != op.end(); ++it) {
@@ -69,6 +75,15 @@ Set<int> ref_one_comp(const Set<int> & s, const partition & op) {
 			return c;
 		}
 	}
+	return Set<int>();
 }
+
+UserFunction4perl(	"CREDIT tropmat\n\n"
+					"# @category Axioms\n"
+					"# Computes the __refinement__ of a type //A// with respect to an ordered partition //P// of [d], where d=[[RANK]]\n"
+					"# @param Array<Set<Int>> A a type\n"
+					"# @param Array<Set<Int>> P an ordered partition of (a subset of) [d]\n"
+					"# @return Array<Set<Int>>\n",
+					&ref4perl, "refinement");
 
 }}

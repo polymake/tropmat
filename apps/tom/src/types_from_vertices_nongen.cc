@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -22,6 +22,7 @@
 #include <iostream>
 #include "types_from_vertices.h"
 #include "refinement.h"
+#include "utils.h"
 
 
 using namespace std;
@@ -36,7 +37,8 @@ Array<partition> enumerate_ordered_partitions(const Set<int> & s) {
 	return ret;
 }
 
-UserFunction4perl(	"# @category Utilities\n"
+UserFunction4perl(	"CREDIT tropmat\n\n"
+					"# @category Utilities\n"
 					"# Enumerate all ordered partitions of the set //S//."
 					"# @param Set<Int> S\n"
 					"# @return Array<Array<Set<Int>>>\n",
@@ -73,11 +75,11 @@ list<partition> rec_ordps(const Set<int> & s) {
 
 
 // all subtypes of a given type curr
-void all_subtypes_nongen(std::list<tomtype> & ret, const tomtype curr, int d) {
+void all_subtypes_nongen(std::list<pmtomtype> & ret, const pmtomtype curr, int d) {
 	
-	Set<tomtype> r; 	// will contain types
+	Set<pmtomtype> r; 	// will contain types
 	
-	Set<int> all;
+	Set<int> all;		// the set [d]
 	for (int i=1; i<=d; ++i) {
 		all += i;
 	}
@@ -88,12 +90,14 @@ void all_subtypes_nongen(std::list<tomtype> & ret, const tomtype curr, int d) {
 		r += refinement(curr, *it);	// refine curr with everyone
 	}
 	
-	ret = std::list<tomtype>(r.begin(), r.end());
+	ret = std::list<pmtomtype>(r.begin(), r.end());
 }
 
-Array<Array<Set<int> > > star_of_type_nongen(const Array<Set<int> > curr, int d) {
+int max_entry(const Array<Set<int> > & a);
+
+Array<Array<Set<int> > > star_of_type_nongen(const Array<Set<int> > curr) {
 	std::list<Array<Set<int> > > r;
-	all_subtypes_nongen(r, curr, d);
+	all_subtypes_nongen(r, curr, max_entry(curr));
 	Array<Array<Set<int> > > ret(r.begin(), r.end());
 	return ret;
 }
@@ -101,14 +105,34 @@ Array<Array<Set<int> > > star_of_type_nongen(const Array<Set<int> > curr, int d)
 Function4perl(&star_of_type_nongen, "star_of_type_nongen");
 
 
-Array<tomtype> types_from_vertices_nongen(const Array<tomtype> & vertices, int d) {
-	Set<tomtype> types;		// will contain types
+Array<Array<int> > tom_convex_hull_nongen(const Array<Set<int> > curr) {
+	Array<Array<Set<int> > > star = star_of_type_nongen(curr);
 	
-	for (Array<tomtype>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
-		list<tomtype> star;
+	std::list<Array<int> > r;
+	
+	for (Array<Array<Set<int> > >::const_iterator it = star.begin(); it != star.end(); ++it) {
+		if (isTope(*it)) {
+			r.push_back(pmtope(*it));
+		}
+	}
+	
+	Array<Array<int> > ret(r.begin(), r.end());
+	return ret;
+}
+
+Function4perl(&tom_convex_hull_nongen, "tom_convex_hull_nongen");
+
+
+
+
+Array<pmtomtype> types_from_vertices_nongen(const Array<pmtomtype> & vertices, int d) {
+	Set<pmtomtype> types;		// will contain types
+	
+	for (Array<pmtomtype>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
+		list<pmtomtype> star;
 		all_subtypes_nongen(star, *it, d);
 		
-		for (list<tomtype>::const_iterator sit = star.begin(); sit != star.end(); ++sit) {
+		for (list<pmtomtype>::const_iterator sit = star.begin(); sit != star.end(); ++sit) {
 			types += *sit;
 		}
 	}

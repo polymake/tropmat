@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -17,6 +17,8 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+CREDIT tropmat
+
 # @topic objects/Visual::TropicalOrientedMatroid
 # @category Visualization
 # Visualisation of tropical oriented matroids.
@@ -27,8 +29,11 @@ use Polymake::Struct (
    [ '$TropicalOrientedMatroid' => '#%', default => 'undef' ]
 );
 
-
-
+# multiple colours for visualisation of multiple hyperplanes: possible values are:
+# 'hsv' (default) for colours distributed evenly in the hsv colour space
+# 'tud' for TU Darmstadt colour scheme (requires tud colours in your rgb.txt) 
+# 'gray' for gray scales
+custom $multicolor = 'hsv';
 
 object TropicalOrientedMatroid {
 
@@ -55,7 +60,7 @@ user_method VISUAL_DUAL_PHP($; %Visual::Polygons::decorations) : VERTICES, DIM, 
 	my $vertices=$self->PSEUDOHYPERPLANE($php);
 	
 	if ($d >= 4) {
-		die "don't know how to visulize $d-dimensional polytopal complex";
+		die "don't know how to visualize $d-dimensional polytopal complex";
 	}
 
 	my @cells_visual=();
@@ -134,7 +139,7 @@ user_method VISUAL_DUAL_PHPS : VERTICES, DIM, N_PHP{
 	my $d=$self->DIM;
 
 	if ($d >= 4) {
-		die "don't know how to visulize $d-dimensional polytopal complex";
+		die "don't know how to visualize $d-dimensional polytopal complex";
 	}
 
 	my @cells_visual=();
@@ -169,7 +174,7 @@ precondition : DIM {$this->DIM<=3, $this->DIM>=2}
 # @return Visual::TropicalOrientedMatroid
 user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES, DIM {
 	my ($self, $decor)=@_;
-	my $d=$self->DIM;
+	my $d = $self->DIM;
 	my $vertices = $self->VERTICES;
 
 
@@ -274,58 +279,6 @@ user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
 }
 precondition : DIM { $this->DIM<=3 }
 
-# @category Visualization
-# Visualizes the intersection of the given pseudohyperplanes.
-# @param Set<int> phps
-# @return Visual::TropicalOrientedMatroid
-#user_method VISUAL_INTERSECTION : VERTICES, DIM {
-#	my ($self, $hps)=@_;
-#	my @h;
-#	if ($hps=='All') {
-#		@h=();
-#		for (my $i=1; $i<=$self->N_PHP; ++$i){
-#			push(@h,$i);
-#		}
-#	} else {
-#		@h = @{$hps};
-#	}
-#	my $d=$self->DIM;
-#
-#	my @v=@{$self->VERTICES};
-#	my @r=();	# will contain types in the intersection
-#	
-#	VERTICES: foreach (@v) {		# go thru VERTICES
-#		my @s=@{$_};
-#		foreach (@h){				# go thru hyperplanes
-#			unless (@{$s[$h-1]} >= 2) {
-#				next VERTICES;
-#			}
-#		}
-#		push(@r,\@s);	# if we get here, every tested position has at least 2 elts
-#	}
-#
-#	my $zero=new Vector<Float>($d);
-#	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
-#
-#	# now go thru cells in intersection
-#	foreach my $curr (@r) {
-#	
-#		my $m=$origin;
-#		
-#		foreach (@h) {
-#			my $entry=$curr->[$_];
-#			for (my $i=0; $i<@$entry-1; ++$i) {
-#				for (my $j=$i+1; $j<@$entry; ++$j) {
-#					my @entry=@$entry;
-#					my $p=get_base_cell($entry[$i],$entry[$j],$entry,$d);
-#				}
-#			}
-#		}
-#	}
-#
-#}
-
-
 
 
 ###########################
@@ -338,18 +291,23 @@ sub ortho_project {
 	my @vs = @{$poly->VERTICES};
 	my @nvs = ();
 	foreach (@vs) {
-		my @v=@{$_};
-		
-		my @nv = ();
-		$nv[0]=1;
-		for (my $i=1; $i<4; ++$i) {
-			$nv[$i] = $v[$i] - 1/3*$v[4];
-		}
-		push(@nvs,\@nv);
+		push(@nvs,ortho_project_vector($_));
 	}
 	
 	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
 	return $r;
+}
+
+sub ortho_project_vector {
+	my $v=shift;
+	my @v=@$v;
+		
+	my @nv = ();
+	$nv[0]=1;
+	for (my $i=1; $i<4; ++$i) {
+		$nv[$i] = $v[$i] - 1/3*$v[4];
+	}
+	return \@nv;
 }
 
 # projects a 2-dim standard simplex in R3 to R2.
@@ -390,19 +348,19 @@ sub shift_php {
 	}
 	
 	my $r = new polytope::Polytope<Float>(VERTICES=>\@nvs);
-#	my $r = new polytope::Polytope<Float>(VERTICES=>\@vs);
 
 	return $r;
 	
 
 }
 
-
 sub get_color_hsv {
 	my ($ind, $total) = @_;
 	return new HSV(360/$total*$ind,1,1);
 }
-sub get_color {	# tud
+
+
+sub get_color_tud {	# tud
 	my ($ind, $total) = @_;
 	my $i;
 	if ($total>=12) {
@@ -411,9 +369,48 @@ sub get_color {	# tud
 	else {
 		$i=int(12/$total)*$ind+1;
 	}
-	return 'tud'.$i.'b';
+	my $ret="tud".$i."b";
+	return $ret;
 }
 
+sub get_color_grayscale {
+	my ($ind, $total) = @_;
+
+	my $d; 
+	if ($total==1) {$d=0;}
+	else {$d= 1/($total-1);}
+
+	my $colour=$ind*$d;
+	return new RGB($colour, $colour, $colour);
+}
+
+
+# @category Utilities
+# Returns the //i//-th of a total of //n// different colours.
+# Depending on the value of $Visual::TropicalOrientedMatroid::multicolor either
+# in the HSV colour model (//hsv//), grayscale (//gray//) or TU Darmstadt colours (//tud// -- requires the TUD colours in your rgb.txt).
+# @param Int i current colour
+# @param Int n total number of colours
+# @return Color
+
+
+sub get_color {
+	my @params = @_;
+	if (defined($Visual::TropicalOrientedMatroid::multicolor)) {
+		my $mc = $Visual::TropicalOrientedMatroid::multicolor;
+		if ($mc eq 'gray') {
+			return get_color_grayscale(@params);
+		}
+		if ($mc eq 'tud') {
+			return get_color_tud(@params);
+		}
+		if ($mc eq 'hsv') {
+			return get_color_hsv(@params);
+		}
+	}
+#	print "Warning: undefined colour scheme -- using 'hsv'.";
+	return get_color_hsv(@params);
+}
 
 
 }	# end TropicalOrientedMatroid

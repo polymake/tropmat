@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -156,15 +156,18 @@ void neighbours(Array<Array<Set<int>, Set<int> > > & nb, const Array<Set<int> > 
 	}
 }
 
-// Function4perl(&comparable, "comparable(Array Array $)");
-InsertEmbeddedRule(	"# @category Axioms\n"
+
+bool comp4perl(const Array<Set<int> >& A, const Array<Set<int> >& B) {
+	return comparable(A, B, max_entry(A, B));
+}
+
+UserFunction4perl(	"CREDIT tropmat\n\n"
+					"# @category Axioms\n"
 					"# Two types are __comparable__ if their comparability graph is acyclic.\n"
 					"# @param Array<Set<Int>> A\n"
 					"# @param Array<Set<Int>> B\n"
-					"# @return Bool\n"
-					"user_function comparable(ARRAY ARRAY) {\n"
-					"	my ($a,$b)=@_;\n"
-					"	comparable($a, $b, max_entry($a,$b));}\n");
+					"# @return Bool\n",
+					&comp4perl, "comparable");
 
 
 } }

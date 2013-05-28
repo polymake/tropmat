@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -27,6 +27,7 @@ namespace polymake { namespace tom {
 
 Array<Set<int> > enumerate_subsets(const Set<int> & s);
 
+bool isTope(const Array<Set<int> >& t);
 }}
 
 #endif

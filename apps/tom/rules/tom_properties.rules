@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+CREDIT tropmat
 
 object TropicalOrientedMatroid {
 
@@ -96,7 +97,7 @@ property N_APICES : Int;
 property BOUNDARY_AXIOM : Bool;
 
 # @category Axioms
-# The __surrounding axiom__ states that the [[REFINEMENT]] of every type is again a type.
+# The __surrounding axiom__ states that the [[refinement]] of every type is again a type.
 property SURROUNDING_AXIOM : Bool;
 
 # @category Axioms
@@ -121,6 +122,10 @@ property IS_UNIFORM : Bool;
 # The __dual__ of tropical oriented matroid with parameters ([[N_PHP|n]],[[RANK|d]]) is the tropical oriented matroid with parameters (d,n) obtained by replacing every vertex by its [[dual_type]].
 property DUAL : TropicalOrientedMatroid;
 
+
+# @category Mixed subdivisions
+# The mixed subdivision according to the tom.
+property MIXED_SUBDIVISION : fan::PolyhedralComplex;
 
 } # end TropicalOrientedMatroid
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+
+CREDIT tropmat
 
 # @category Type manipulation
 # The __dual__ of the (//n//,//d//)-type //t// is a (//d//,//n//)-type.
@@ -36,13 +38,14 @@ user_function dual_type {
 	return \@r;
 }
 
+
 # @category Type manipulation
-# Returns a list of all subtypes of a given type //A//. Only works if //A// is fine.
+# Returns a list of all subtypes of a given type //A//.
 # @param Array<Set<Int>> A
 # @return Array<Array<Set<Int>>>
 user_function all_subtypes {
 	my $t=shift;
-	return star_of_type($t);
+	return star_of_type_nongen($t);
 }
 
 # @category Type manipulation
@@ -62,6 +65,14 @@ user_function type_intersection {
 	return \@intersection;
 }
 
+# @category Mixed subdivisions
+# Returns all topes of a given type.
+# @param Array<Set<Int>> type
+# @return Array<Array<Int>>
+user_function tom_convex_hull {
+	my $t = shift;
+	return tom_convex_hull_nongen($t);
+}
 
 # @category Basic properties
 # Returns a list of all [[VERTICES]] of //t// that contain the given pretype //p//.

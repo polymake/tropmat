@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -72,7 +72,7 @@ Array<Array<Set<int> > > topes_from_vertices(const Array<Array<Set<int> > > vert
 			topes += *l;
 		}
 	}
-		
+	
 	Array<Array<Set<int> > > ret(topes.begin(),topes.end());
 	return ret;
 }

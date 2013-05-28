@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+
+CREDIT tropmat
 
 object TropicalOrientedMatroid {
 
@@ -77,7 +79,7 @@ sub dual_of_cell {
 
 	my @dual_cells=();	# will contain dual cells
 
-	my $s=$tom->all_subtypes($v);
+	my $s = all_subtypes($v);
 
 
 	# now go thru all "edges", i.e., subsets of entry of cardinality 2
@@ -92,12 +94,12 @@ sub dual_of_cell {
 				#print "edge: $edge  entry: $c->[$php-1]\n";
 				if (incl($edge, $c->[$php-1])<=0) {	# if i,j are contained in current entry ...
 #				print "type: "; foreach(@$c){print "{@$_} "}; print "\n";
-					my $cell=minkowski_cell($c, $d);
+					my $cell = minkowski_cell($c, $d);
 					push(@vertices, $cell->VERTEX_BARYCENTER);
 				}
 			}
 #			print "vertices:\n"; foreach (@vertices){print "$_\n";} print "\n";
-			my $m=new Polytope<Float>(POINTS=>\@vertices);
+			my $m=new polytope::Polytope<Float>(POINTS=>\@vertices);
 			push(@dual_cells, $m);							
 		}
 	}
@@ -122,10 +124,10 @@ sub dual_of_fine_cell {
 			
 			my $m=$p;
 			for (my $k=0; $k<@$v; ++$k) {
-				unless ($k+1==$php) {
-					my @vs=@{$v->[$k]};
-					my $tmp=simplex_face($d+1,@vs);
-					$m = polytope::minkowski_sum(1, $m, 1, $tmp);
+				unless ($k+1 == $php) {
+					my @vs = @{$v->[$k]};
+					my $tmp = simplex_face($d+1,@vs);
+					$m = minksum($m, $tmp);
 				}
 			}
 			push(@dual_cells, $m);
@@ -147,7 +149,7 @@ sub get_base_cell {
 	foreach (@$all_ss) {
 		push(@vertices,center_of_cell($d,$_));
 	}
-	my $p=new Polytope<Float>(VERTICES=>\@vertices);
+	my $p=new polytope::Polytope<Float>(VERTICES=>\@vertices);
 	return $p;
 }
 

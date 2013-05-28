@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -22,13 +22,12 @@
 
 #include "polymake/Set.h"
 #include "polymake/Array.h"
+#include "utils.h"
 
 namespace polymake { namespace tom {
 
-typedef Array<Set<int> > tomtype;
-typedef Array<Set<int> > partition;
 
-tomtype refinement(const tomtype & A, const partition & op);
+pmtomtype refinement(const pmtomtype & A, const partition & op);
 
 }}
 

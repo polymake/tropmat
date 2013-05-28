@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Silke Möser
+# Copyright (c) 2013 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+
+CREDIT tropmat
 
 # @category Producing from scratch
 # Produces the uniform tropical oriented matroid with parameters //n// and //d//. I.e., the (unique) tropical oriented matroid in [[GENERAL_POSITION]] all of whose [[TOPES]] are decreasing. (Note that I could also have chosen increasing but decreasing was faster to implement.)
@@ -66,7 +68,7 @@ user_function tom_from_tropical_polytope {
 # Returns the face of a standard //d//-simplex spanned by the vertices in //vertices//.
 # @param Int d the dimension of the simplex
 # @param Set<Int> vertices the labels of the vertices (starting from 0)
-# @return Polytope
+# @return polytope::Polytope
 user_function simplex_face {
 	my ($d, @l) = @_;
 	my $l = @l;
@@ -75,7 +77,6 @@ user_function simplex_face {
 	for (my $i=0; $i<$l; ++$i) {
 		# create a vector with one at positions 0 and i+1 and 0 elsewhere
 		# to be replaced with unit_vector
-
 		my @v = ();
 		push(@v,1);
 		
@@ -101,21 +102,26 @@ user_function simplex_face {
 # starting from 0.
 # @param Array<Set<Int>> faces an (n,d)-type
 # @param Int d the dimension of the big simplex
-# @return Polytope
+# @return polytope::Polytope
 user_function minkowski_cell {
-	
 	my ($ll, $d) = @_;
 	my @l = @{$ll};
 	my $l = @l;
 	my $zero=new Vector<Float>($d);
 	my $origin=new polytope::Polytope<Float>(VERTICES => [(1|$zero)]);
-	
 	my $m = $origin;
 	for (my $i=0; $i<$l; ++$i) {
-
 		my $temp = &simplex_face($d, @{$l[$i]});
-		$m = polytope::minkowski_sum(1,$m,1,$temp);
+		$m = minksum($m,$temp);
 	}	
 	return $m;	
 } 
 
+
+sub minksum {
+	my $p=shift;
+	my $q=shift;
+	my $c=cube(3);
+	my $m=polytope::minkowski_sum(1,$p,1,$q);
+	return $m;
+}

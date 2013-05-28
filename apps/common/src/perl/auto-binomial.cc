@@ -1,6 +1,6 @@
 /* Copyright (c) 1997-2010
    Ewgenij Gawrilow, Michael Joswig (Technische Universitaet Darmstadt, Germany)
-   http://www.polymake.de
+   http://www.polymake.org
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -19,7 +19,7 @@
 
 #include "polymake/client.h"
 #include "polymake/Integer.h"
-namespace polymake { namespace common {
+namespace polymake { namespace common { namespace {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
    template <typename T0>
    FunctionInterface4perl( binomial_X_x, T0 ) {
@@ -29,4 +29,4 @@ namespace polymake { namespace common {
 
    FunctionInstance4perl(binomial_X_x, int);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
-} }
+} } }

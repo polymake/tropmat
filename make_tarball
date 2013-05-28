@@ -15,6 +15,7 @@ apps/tom/src/perl/wrap-vertices_from_topes_nongen.cc
 )
 
 svn export . $DIRNAME
+cp tropmat.pdf $DIRNAME
 
 for i in "${noexp[@]}"; do rm $DIRNAME/$i; done;
 

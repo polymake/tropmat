@@ -1,6 +1,6 @@
 /* Copyright (c) 1997-2010
    Ewgenij Gawrilow, Michael Joswig (Technische Universitaet Darmstadt, Germany)
-   http://www.polymake.de
+   http://www.polymake.org
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -15,7 +15,7 @@
    $Project: polymake $$Id: bindings.cc 9716 2010-06-28 22:22:03Z gawrilow $
 */
 
-namespace polymake { namespace tom {
+namespace polymake { namespace tom { namespace {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
    FunctionWrapper4perl( std::list<int, std::allocator<int> > (pm::Array<pm::Set<int, pm::operations::cmp>, void> const&) ) {
       perl::Value arg0(stack[0]);
@@ -36,4 +36,4 @@ namespace polymake { namespace tom {
    FunctionWrapperInstance4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void>, int) );
 
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
-} }
+} } }

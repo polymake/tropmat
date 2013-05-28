@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -21,6 +21,33 @@
 
 using namespace std;
 namespace polymake { namespace tom {
+
+
+tomtype union_of_types(const tomtype & a, const tomtype & b) {
+	tomtype u;
+	
+	for (int i=0; i<int(a.size()); ++i){
+		Set<int> s=a[i]+b[i];
+		u.push_back(s);
+	}
+	return u;
+}
+tomtype union_of_types(const tope & a, const tope & b) {
+	return union_of_types(tope2type(a),tope2type(b));
+}
+tomtype union_of_types(const tomtype & a, const tope & b) {
+	return union_of_types(a,tope2type(b));
+}
+tomtype union_of_types(const tope & a, const tomtype & b) {
+	return union_of_types(tope2type(a),b);
+}
+
+// UserFunction4perl("# @category Type manipulation"
+// 				"# @param Array<Set<Int>> type1"
+// 				"# @param Array<Set<Int>> type2"
+// 				"# @return Array<Set<Int>>",
+// 				&union_of_types, "union_of_types");
+
 
 
 void print(const vertexset & v) {
@@ -96,6 +123,13 @@ tope type2tope(const Array<Set<int> >& type) {
 	return t;
 }
 
+Array<int> pmtope(const Array<Set<int> > & type) {
+	tope t = type2tope(type);
+	Array<int> ret(t.begin(), t.end());
+	return ret;
+}
+
+
 
 tomtype tope2type(const tope & t) {
 	tomtype ret;
@@ -129,7 +163,8 @@ Array<Array<Set<int> > > topes2types(const std::vector<tope> & topes)
 	return r;
 }
 
-UserFunction4perl("# @category Utilities"
+UserFunction4perl("CREDIT tropmat\n\n"
+				"# @category Utilities"
 				"# Converts a list of topes to a list of types."
 				"# @param Array<Array<Int>> topes"
 				"# @return Array<Array<Set<Int>>>",

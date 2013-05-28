@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -61,9 +61,10 @@ list<Set<int> > rec_subsets(const Set<int> & s) {
 
 }	
 	
-UserFunction4perl("# @category Utilities"
-				"# Return all non-empty subsets of a given set //s//."
-				"# @param Set s"
+UserFunction4perl("CREDIT tropmat\n\n"
+				"# @category Utilities"
+				"# Enumerate all non-empty subsets of a given set //S//."
+				"# @param Set S"
 				"# @return Array<Set>",
 				&enumerate_subsets, "enumerate_subsets");
 
@@ -133,11 +134,19 @@ void all_subtypes(std::list<Array<Set<int> > > & ret, const Array<Set<int> > cur
 	ret = fold_sets(ret, subsetlist, 0);
 }
 
-Array<Array<Set<int> > > star_of_type(const Array<Set<int> > curr) {
+Array<Array<Set<int> > > star_of_type(const Array<Set<int> >& curr) {
 	std::list<Array<Set<int> > > r;
 	all_subtypes(r, curr);
 	Array<Array<Set<int> > > ret(r.begin(), r.end());
 	return ret;
+}
+
+
+bool isTope(const Array<Set<int> > & t) {
+	for (Array<Set<int> >::const_iterator it = t.begin(); it != t.end(); ++it) {
+		if (it->size() > 1) return 0;
+	}
+	return 1;
 }
 
 

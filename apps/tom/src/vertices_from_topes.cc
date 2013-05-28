@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Silke Möser
+// Copyright (c) 2013 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -111,31 +111,6 @@ std::vector<tope> neighbourhood(int d, int i, const std::vector<tope> & all) {
 	return nh;
 }
 
-
-tomtype union_of_types(const tomtype & a, const tomtype & b) {
-	tomtype u;
-	
-	for (int i=0; i<int(a.size()); ++i){
-		Set<int> s=a[i]+b[i];
-		u.push_back(s);
-	}
-	return u;
-}
-tomtype union_of_types(const tope & a, const tope & b) {
-	return union_of_types(tope2type(a),tope2type(b));
-}
-tomtype union_of_types(const tomtype & a, const tope & b) {
-	return union_of_types(a,tope2type(b));
-}
-tomtype union_of_types(const tope & a, const tomtype & b) {
-	return union_of_types(tope2type(a),b);
-}
-
-// UserFunction4perl("# @category Type manipulation"
-// 				"# @param Array<Set<Int>> type1"
-// 				"# @param Array<Set<Int>> type2"
-// 				"# @return Array<Set<Int>>",
-// 				&union_of_types, "union_of_types");
 
 bool acyclic(const tomtype & u, int d) {
 	Array<Set<int> > a(u.begin(),u.end());
