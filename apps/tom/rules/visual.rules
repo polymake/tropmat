@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Silke Horn
+# Copyright (c) 2013-2014 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -17,7 +17,7 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREDIT tropmat
+
 
 # @topic objects/Visual::TropicalOrientedMatroid
 # @category Visualization
@@ -177,7 +177,6 @@ user_method VISUAL_MIXED_SUBDIVISION(%Visual::Polygons::decorations) : VERTICES,
 	my $d = $self->DIM;
 	my $vertices = $self->VERTICES;
 
-
     if ($d >= 4) {
 		die "don't know how to visualize the mixed subdivision of a $d-simplex\n";
     }
@@ -264,7 +263,6 @@ user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
 		elsif ($d == 3) {
 			foreach (@{$vertices}) {
 				my $s = minkowski_cell($_, 4);
-				#print "Dim: $s->DIM\n";
     			my $mink = ortho_project($s);		
 	    	 	push (@cells_visual, (my $pv = $mink->VISUAL( 
 	    	 	FacetColor=>get_color($count,$h), VertexStyle=>'hidden' )));

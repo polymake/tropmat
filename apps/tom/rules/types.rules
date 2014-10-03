@@ -17,7 +17,6 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREDIT tropmat
 
 # @category Type manipulation
 # The __dual__ of the (//n//,//d//)-type //t// is a (//d//,//n//)-type.

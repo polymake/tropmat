@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Silke Horn
+# Copyright (c) 2013-2014 Silke Horn
 # http://solros.de/polymake/tropmat
 # 
 # This file is part of the polymake extension tropmat.
@@ -17,7 +17,6 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREDIT tropmat
 
 # @category Producing from scratch
 # Produces the uniform tropical oriented matroid with parameters //n// and //d//. I.e., the (unique) tropical oriented matroid in [[GENERAL_POSITION]] all of whose [[TOPES]] are decreasing. (Note that I could also have chosen increasing but decreasing was faster to implement.)
@@ -121,7 +120,6 @@ user_function minkowski_cell {
 sub minksum {
 	my $p=shift;
 	my $q=shift;
-	my $c=cube(3);
 	my $m=polytope::minkowski_sum(1,$p,1,$q);
-	return $m;
+	return new Polytope<Float>($m);
 }

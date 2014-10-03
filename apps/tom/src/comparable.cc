@@ -1,4 +1,4 @@
-// Copyright (c) 2013 Silke Horn
+// Copyright (c) 2013-2014 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -161,8 +161,7 @@ bool comp4perl(const Array<Set<int> >& A, const Array<Set<int> >& B) {
 	return comparable(A, B, max_entry(A, B));
 }
 
-UserFunction4perl(	"CREDIT tropmat\n\n"
-					"# @category Axioms\n"
+UserFunction4perl("# @category Axioms\n"
 					"# Two types are __comparable__ if their comparability graph is acyclic.\n"
 					"# @param Array<Set<Int>> A\n"
 					"# @param Array<Set<Int>> B\n"

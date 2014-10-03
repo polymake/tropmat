@@ -1,4 +1,4 @@
-// Copyright (c) 2013 Silke Horn
+// Copyright (c) 2013-2014 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -37,8 +37,7 @@ Array<partition> enumerate_ordered_partitions(const Set<int> & s) {
 	return ret;
 }
 
-UserFunction4perl(	"CREDIT tropmat\n\n"
-					"# @category Utilities\n"
+UserFunction4perl("# @category Utilities\n"
 					"# Enumerate all ordered partitions of the set //S//."
 					"# @param Set<Int> S\n"
 					"# @return Array<Array<Set<Int>>>\n",

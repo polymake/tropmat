@@ -1,4 +1,4 @@
-// Copyright (c) 2013 Silke Horn
+// Copyright (c) 2013-2014 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -78,8 +78,7 @@ Set<int> ref_one_comp(const Set<int> & s, const partition & op) {
 	return Set<int>();
 }
 
-UserFunction4perl(	"CREDIT tropmat\n\n"
-					"# @category Axioms\n"
+UserFunction4perl("# @category Axioms\n"
 					"# Computes the __refinement__ of a type //A// with respect to an ordered partition //P// of [d], where d=[[RANK]]\n"
 					"# @param Array<Set<Int>> A a type\n"
 					"# @param Array<Set<Int>> P an ordered partition of (a subset of) [d]\n"

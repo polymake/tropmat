@@ -11,10 +11,13 @@ URI http://solros.de/polymake/tropmat#1.1
 # put your copyright notice, or just refer to your website
 # unless its address is already contained in the URI.
 
-# CREDIT
-#  short description
-#  copyright your name, address, etc.
 
+CREDIT
+  Tropical oriented matroid functionality.
+  Copyright by Silke Horn.
+  http://solros.de/polymake/tropmat/
+
+NAME tropmat
 
 # If this extension relies on functionality of further extensions,
 # please list their URIs below, separated by blanks and/or newlines.

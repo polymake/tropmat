@@ -1,4 +1,4 @@
-// Copyright (c) 2013 Silke Horn
+// Copyright (c) 2013-2014 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -61,8 +61,7 @@ list<Set<int> > rec_subsets(const Set<int> & s) {
 
 }	
 	
-UserFunction4perl("CREDIT tropmat\n\n"
-				"# @category Utilities"
+UserFunction4perl("# @category Utilities"
 				"# Enumerate all non-empty subsets of a given set //S//."
 				"# @param Set S"
 				"# @return Array<Set>",

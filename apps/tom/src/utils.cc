@@ -1,4 +1,4 @@
-// Copyright (c) 2013 Silke Horn
+// Copyright (c) 2013-2014 Silke Horn
 // http://solros.de/polymake/tropmat
 // 
 // This file is part of the polymake extension tropmat.
@@ -163,8 +163,7 @@ Array<Array<Set<int> > > topes2types(const std::vector<tope> & topes)
 	return r;
 }
 
-UserFunction4perl("CREDIT tropmat\n\n"
-				"# @category Utilities"
+UserFunction4perl("# @category Utilities"
 				"# Converts a list of topes to a list of types."
 				"# @param Array<Array<Int>> topes"
 				"# @return Array<Array<Set<Int>>>",
