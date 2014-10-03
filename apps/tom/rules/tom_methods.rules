@@ -85,7 +85,7 @@ user_method APEX : VERTICES, RANK {
 # in //type// containing them both.
 # @param Array<Set<Int>> type
 # @return graph::Graph<Undirected>
-user_method TYPE_GRAPH : RANK{
+user_method TYPE_GRAPH : RANK, N_PHP{
 
 	my ($self, $type) = @_;
 	my @t=@$type;
