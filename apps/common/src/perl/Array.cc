@@ -29,6 +29,5 @@ namespace polymake { namespace common { namespace {
    };
 
    FunctionInstance4perl(new_X, Array< Array< Set< int > > >, perl::Canned< const Set< Array< Set< int > > > >);
-   OperatorInstance4perl(assign, Array< Set< int > >, perl::Canned< const Set< int > >);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } } }

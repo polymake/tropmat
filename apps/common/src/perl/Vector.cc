@@ -17,10 +17,10 @@
 
 ///==== this line controls the automatic file splitting: max.instances=40
 
-#include "polymake/client.h"
 #include "polymake/Vector.h"
+#include "polymake/client.h"
+
 namespace polymake { namespace common { namespace {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
-   OperatorInstance4perl(Binary__ora, int, perl::Canned< const Vector< double > >);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } } }
