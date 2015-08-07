@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+# @topic category objects/TropicalOrientedMatroid/methods/Producing a new TropicalOrientedMatroid
+# methods that define a new tropical oriented matroid
+
+# @topic category objects/TropicalOrientedMatroid/properties/Producing a new TropicalOrientedMatroid
+# properties that define a new tropical oriented matroid
 
 
 object TropicalOrientedMatroid {

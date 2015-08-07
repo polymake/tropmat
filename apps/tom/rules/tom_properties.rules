@@ -16,6 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+# @topic category objects/TropicalOrientedMatroid/properties/Basic properties
+# basic properties of tropical oriented matroids
+
+# @topic category objects/TropicalOrientedMatroid/properties/Axioms
+# axioms of tropical oriented matroids
+
+# @topic category objects/TropicalOrientedMatroid/properties/Mixed subdivisions
+# mixed subdivisions of tropical oriented matroids
+
+# @topic category objects/TropicalOrientedMatroid/properties/Producing a new TropicalOrientedMatroid
+# properties that define a new tropical oriented matroid
 
 object TropicalOrientedMatroid {
 

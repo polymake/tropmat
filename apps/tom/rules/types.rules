@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
-
+# @topic category functions/Basic properties
+# functions for basic properties of tropical oriented matroids
 
 # @category Type manipulation
 # The __dual__ of the (//n//,//d//)-type //t// is a (//d//,//n//)-type.

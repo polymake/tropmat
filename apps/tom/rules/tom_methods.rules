@@ -17,6 +17,20 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
+# @topic category objects/TropicalOrientedMatroid/methods/Output
+# output methods for tropical oriented matroids
+
+# @topic category objects/TropicalOrientedMatroid/methods/Basic properties
+# methods for basic properties of tropical oriented matroids
+
+# @topic category objects/TropicalOrientedMatroid/methods/Pseudohyperplanes
+# methods producing pseudohyperplanes
+
+
+# @topic category objects/TropicalOrientedMatroid/methods/Type manipulation
+# methods for type manipulation
+
 object TropicalOrientedMatroid {
 
 # @category Output

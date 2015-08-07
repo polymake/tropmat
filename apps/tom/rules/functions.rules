@@ -17,8 +17,19 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# @topic category functions/Producing a tropical oriented matroid from scratch
+# functions creating a new tropical oriented matroid from parameters
 
-# @category Producing from scratch
+# @topic category functions/Producing a tropical oriented matroid from given data
+# functions creating a new tropical oriented matroid from given data
+
+# @topic category functions/Mixed subdivisions
+# functions for mixed subdivisions
+
+# @topic category functions/Type manipulation
+# type manipulation
+
+# @category Producing a tropical oriented matroid from scratch
 # Produces the uniform tropical oriented matroid with parameters //n// and //d//. I.e., the (unique) tropical oriented matroid in [[GENERAL_POSITION]] all of whose [[TOPES]] are decreasing. (Note that I could also have chosen increasing but decreasing was faster to implement.)
 # @param Int n
 # @param Int d
@@ -35,7 +46,7 @@ user_function uniform {
 	return $t;
 }
 
-# @category Producing from given data
+# @category Producing a tropical oriented matroid from given data
 # Produces the (realisable) tropical oriented matroid of a given tropical polytope //T//. (Just to help off the rather deplorable fact that the application ''tropical oriented matroid'' used every other application except ''tropical'' and ''matroid''.)
 # @param tropical::TropicalPolytope T
 # @return TropicalOrientedMatroid

@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
+# @topic category objects/TropicalOrientedMatroid/methods/Axioms
+# methods dealing with axioms of tropical oriented matroids
+
+
 
 object TropicalOrientedMatroid {
 

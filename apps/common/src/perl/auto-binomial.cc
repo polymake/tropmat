@@ -17,16 +17,10 @@
 
 ///==== this line controls the automatic file splitting: max.instances=40
 
-#include "polymake/client.h"
 #include "polymake/Integer.h"
+#include "polymake/client.h"
+
 namespace polymake { namespace common { namespace {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
-   template <typename T0>
-   FunctionInterface4perl( binomial_X_x, T0 ) {
-      perl::Value arg0(stack[0]), arg1(stack[1]);
-      WrapperReturn( Integer::binom(arg0.get<T0>(), arg1) );
-   };
-
-   FunctionInstance4perl(binomial_X_x, int);
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } } }

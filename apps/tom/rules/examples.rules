@@ -18,7 +18,7 @@
 
 
 
-# @category Producing from scratch
+# @category Producing a tropical oriented matroid from scratch
 # Produces an interesting non-realisable tropical oriented matroid in
 # dimension 4.
 # @return TropcialOrientedMatroid
@@ -27,7 +27,7 @@ user_function d4_nonrealisable() {
 	new TropicalOrientedMatroid(VERTICES=>[[[1,2,3,4],[2],[3],[4]],[[1],[1,2,3,4],[3],[4]],[[1],[2],[1,2,3,4],[4]],[[1],[2],[3],[1,2,3,4]],[[1],[1,2],[1,3],[1,4]],[[1,2],[2],[2,3],[2,4]],[[1,3],[2,3],[3],[3,4]],[[1,4],[2,4],[3,4],[4]],[[1,2,3],[2],[3],[2,4]],[[1,3],[2],[3],[2,3,4]],[[1,3,4],[2,3],[3],[4]],[[1,4],[2,3,4],[3],[4]],[[1],[1,2,3],[3],[3,4]],[[1],[1,2],[3],[1,3,4]],[[1],[1,2,4],[1,3],[4]],[[1],[2,4],[1,3,4],[4]],[[1],[2],[1,2,3],[1,4]],[[1],[2],[2,3],[1,2,4]],[[1,2],[2],[2,3,4],[4]],[[1,2,4],[2],[3,4],[4]]])
 }
 
-# @category Producing from scratch
+# @category Producing a tropical oriented matroid from scratch
 # Produces an interesting non-realisable tropical oriented matroid in
 # dimension 3, whose dual is 6-dimensional.
 # @return TropcialOrientedMatroid
@@ -36,7 +36,7 @@ user_function d3_nonrealisable() {
 	new TropicalOrientedMatroid(VERTICES=>[[[1],[1,2,3],[1],[1],[1],[1]],[[1],[2,3],[1],[1,2],[1],[1]],[[1,2,3],[2],[1],[2],[1],[1]],[[2,3],[2],[1],[2],[1],[1,2]],[[2,3],[2],[1],[2],[1,2],[2]],[[1,3],[2,3],[1],[2],[1],[1]],[[1,3],[3],[1],[1,2],[1],[1]],[[2,3],[2],[1,3],[2],[2],[2]],[[2],[2],[1,2,3],[2],[2],[2]],[[3],[2],[1,3],[2],[1,2],[2]],[[3],[2],[1,3],[2],[1],[1,2]],[[3],[2,3],[1,3],[2],[1],[1]],[[3],[3],[1,3],[1,2],[1],[1]],[[3],[3],[3],[1,2,3],[1],[1]],[[3],[3],[3],[2,3],[1],[1,2]],[[3],[3],[3],[2,3],[1,3],[2]],[[3],[2,3],[3],[2],[1],[1,2]],[[3],[2,3],[3],[2],[1,3],[2]],[[3],[2],[3],[2],[1,2,3],[2]],[[3],[3],[3],[3],[3],[1,2,3]],[[3],[3],[3],[3],[1,3],[1,2]]])
 }
 
-# @category Producing from scratch
+# @category Producing a tropical oriented matroid from scratch
 # Produces a very small example of a 2-dimensional tropical oriented matroid.
 # @return TropcialOrientedMatroid
 
@@ -44,7 +44,7 @@ user_function toy_example() {
 	new TropicalOrientedMatroid(VERTICES=>[[[1,2,3],[1]],[[3],[1,2,3]],[[2,3],[1,2]]]);
 }
 
-# @category Producing from scratch
+# @category Producing a tropical oriented matroid from scratch
 # Produces a  small 2-dimensional tropical oriented matroid in non-general position.
 # @return TropcialOrientedMatroid
 user_function tom_example1 {
@@ -52,7 +52,7 @@ user_function tom_example1 {
 }
 
 
-# @category Producing from scratch
+# @category Producing a tropical oriented matroid from scratch
 # Produces a  small 3-dimensional tropical oriented matroid (the [[D_PLACING]] of [[toy_example]]).
 # @return TropcialOrientedMatroid
 user_function tom_example2 {
@@ -60,7 +60,7 @@ user_function tom_example2 {
 	return $t->D_PLACING;
 }
 
-# @category Producing from scratch
+# @category Producing a tropical oriented matroid from scratch
 # Produces a  small 2-dimensional tropical oriented matroid in [[GENERAL_POSITION|non-general position]].
 # @return TropcialOrientedMatroid
 user_function tom_example3 {

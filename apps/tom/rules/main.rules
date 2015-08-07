@@ -17,7 +17,6 @@
 # along with tropmat.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
 # @topic application
 # This application deals with __t__ropical __o__riented __m__atroids (toms) as defined by Ardila and Develin. TropicalOrientedMatroids are defined via their [[TYPES]] (or some subsets, such as its [[VERTICES]] or [[TOPES]]).
 # 
@@ -26,6 +25,10 @@
 # Note that this documentation might contain functions which are not yet publicly available. 
 # 
 # Contained in extension ''tropmat''.
+
+# @topic category functions/Axioms
+# functions dealing with axioms of tropical oriented matroids
+
 
 IMPORT common graph polytope fan
 
