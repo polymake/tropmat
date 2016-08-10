@@ -1,5 +1,5 @@
-/* Copyright (c) 1997-2010
-   Ewgenij Gawrilow, Michael Joswig (Technische Universitaet Darmstadt, Germany)
+/* Copyright (c) 1997-2015
+   Ewgenij Gawrilow, Michael Joswig (Technische Universitaet Berlin, Germany)
    http://www.polymake.org
 
    This program is free software; you can redistribute it and/or modify it
@@ -12,34 +12,21 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 --------------------------------------------------------------------------------
-   $Project: polymake $$Id: bindings.cc 9691 2010-05-28 23:47:18Z gawrilow $
 */
 
 namespace polymake { namespace tom { namespace {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
-   FunctionWrapper4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp>, void>, pm::Array<pm::Set<int, pm::operations::cmp>, void>, int) ) {
-      perl::Value arg0(stack[0]), arg1(stack[1]), arg2(stack[2]);
-      IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Set< int > > > >(), arg1.get< perl::TryCanned< const Array< Set< int > > > >(), arg2 );
-   }
-   FunctionWrapperInstance4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp>, void>, pm::Array<pm::Set<int, pm::operations::cmp>, void>, int) );
-
-   FunctionWrapper4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp>, void> const&, pm::Array<pm::Set<int, pm::operations::cmp>, void> const&, int) ) {
-      perl::Value arg0(stack[0]), arg1(stack[1]), arg2(stack[2]);
-      IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Set< int > > > >(), arg1.get< perl::TryCanned< const Array< Set< int > > > >(), arg2 );
-   }
-   FunctionWrapperInstance4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp>, void> const&, pm::Array<pm::Set<int, pm::operations::cmp>, void> const&, int) );
-
-   FunctionWrapper4perl( bool (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void>, int) ) {
+   FunctionWrapper4perl( bool (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp> > >, int) ) {
       perl::Value arg0(stack[0]), arg1(stack[1]);
       IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Array< Set< int > > > > >(), arg1 );
    }
-   FunctionWrapperInstance4perl( bool (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void>, int) );
+   FunctionWrapperInstance4perl( bool (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp> > >, int) );
 
-   FunctionWrapper4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp>, void> const&, pm::Array<pm::Set<int, pm::operations::cmp>, void> const&) ) {
+   FunctionWrapper4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp> > const&, pm::Array<pm::Set<int, pm::operations::cmp> > const&) ) {
       perl::Value arg0(stack[0]), arg1(stack[1]);
       IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Set< int > > > >(), arg1.get< perl::TryCanned< const Array< Set< int > > > >() );
    }
-   FunctionWrapperInstance4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp>, void> const&, pm::Array<pm::Set<int, pm::operations::cmp>, void> const&) );
+   FunctionWrapperInstance4perl( bool (pm::Array<pm::Set<int, pm::operations::cmp> > const&, pm::Array<pm::Set<int, pm::operations::cmp> > const&) );
 
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } } }

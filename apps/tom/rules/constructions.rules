@@ -201,7 +201,7 @@ user_method D_PLACING : VERTICES, RANK, DIM, N_PHP {
 			$new_cell[$curr-1]=\@new_entry;
 			push(@r,\@new_cell);
 			
-			my @new_cell=@curr_cell;	# replace current position by {d+1}
+			@new_cell=@curr_cell;	# replace current position by {d+1}
 			my @tmp=($d+1);
 			$new_cell[$curr-1]=\@tmp;
 			if (rank(\@new_cell,$d+1)==2) { push(@new_height,\@new_cell); }

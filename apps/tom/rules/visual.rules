@@ -247,7 +247,7 @@ user_method VISUAL_PSEUDO_HYPERPLANES: VERTICES, DIM {
     }
 
 	my @cells_visual = ( );
-	my $count=0;
+	$count=0;
 	my $h=@h;
 	foreach (@h) {
 		my $vertices = $self->PSEUDOHYPERPLANE($_);

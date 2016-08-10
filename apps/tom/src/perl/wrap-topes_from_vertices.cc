@@ -1,5 +1,5 @@
-/* Copyright (c) 1997-2010
-   Ewgenij Gawrilow, Michael Joswig (Technische Universitaet Darmstadt, Germany)
+/* Copyright (c) 1997-2015
+   Ewgenij Gawrilow, Michael Joswig (Technische Universitaet Berlin, Germany)
    http://www.polymake.org
 
    This program is free software; you can redistribute it and/or modify it
@@ -12,16 +12,15 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 --------------------------------------------------------------------------------
-   $Project: polymake $$Id: bindings.cc 9691 2010-05-28 23:47:18Z gawrilow $
 */
 
 namespace polymake { namespace tom { namespace {
 ///==== Automatically generated contents follow.    Please do not delete this line. ====
-   FunctionWrapper4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void>) ) {
+   FunctionWrapper4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp> > > (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp> > >) ) {
       perl::Value arg0(stack[0]);
       IndirectWrapperReturn( arg0.get< perl::TryCanned< const Array< Array< Set< int > > > > >() );
    }
-   FunctionWrapperInstance4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void> (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp>, void>, void>) );
+   FunctionWrapperInstance4perl( pm::Array<pm::Array<pm::Set<int, pm::operations::cmp> > > (pm::Array<pm::Array<pm::Set<int, pm::operations::cmp> > >) );
 
 ///==== Automatically generated contents end here.  Please do not delete this line. ====
 } } }

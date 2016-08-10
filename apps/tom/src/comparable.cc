@@ -25,7 +25,7 @@
 
 namespace polymake { namespace tom {
 
-void neighbours(Array<Array<Set<int>, Set<int> > > &, const Array<Set<int> > &, const Array<Set<int> > &, int);
+void neighbours(Array<Array<Set<int> > > &, const Array<Set<int> > &, const Array<Set<int> > &, int);
 
 // check whether each pair of vertices is comparable
 // d is the rank
@@ -48,7 +48,7 @@ Function4perl(&comparability_axiom, "comparability_axiom(Array<Array<Set<Int>>>,
 // d is the rank
 bool comparable(const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
 
-	Array<Array<Set<int>, Set<int> > > nb;
+	Array<Array<Set<int> > > nb;
 	neighbours(nb, type1, type2, d);	// for every vertex i in [d] compute two lists of neighbours: the first one for directed edges i -> j, the second for undirected edges i -- j
 
 	for (int i=1; i<=d; ++i) {	// check whether there is a cycle starting with i
@@ -128,7 +128,7 @@ int max_entry(const Array<Set<int> > & a, const Array<Set<int> > & b) {
 // determine the neighbours of each vertex in the comparability graph of two
 // types type1 and type2
 // the result is stored in nb
-void neighbours(Array<Array<Set<int>, Set<int> > > & nb, const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
+void neighbours(Array<Array<Set<int> > > & nb, const Array<Set<int> > & type1, const Array<Set<int> > & type2, int d) {
 
 	nb.resize(d);	// one for each vertex in [d]
 	

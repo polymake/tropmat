@@ -135,7 +135,7 @@ Array<pmtomtype> types_from_vertices_nongen(const Array<pmtomtype> & vertices, i
 			types += *sit;
 		}
 	}
-	return types;
+	return Array<pmtomtype>(types.begin(),types.end());
 }
 
 
